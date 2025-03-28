@@ -1,0 +1,79 @@
+
+# bloop and metals
+.bloop
+.bsp
+
+# metals
+Hearts/metals/
+.metals/
+
+# Metals
+.bloop/
+.metals/
+metals.sbt
+
+# vs code
+.vscode
+
+#java
+*.class
+
+# scala 3
+.tasty
+
+# sbt
+project/project/
+project/target/
+target/
+
+# coursier
+null/
+
+# intellij idea
+*.log
+*.iml
+*.ipr
+*.iws
+.idea
+
+# mac
+.DS_Store
+
+# other?
+.history
+.scala_dependencies
+.cache-main
+
+# sbt specific
+dist/*
+target/
+lib_managed/
+src_managed/
+project/boot/
+project/plugins/project/
+project/local-plugins.sbt
+.history
+.ensime
+.ensime_cache/
+.sbt-scripted/
+local.sbt
+
+# IDEA
+.idea
+.idea_modules
+/.worksheet/
+
+# coursier
+null/
+
+# intellij idea
+*.log
+*.iml
+*.ipr
+*.iws
+.idea
+
+# other?
+.history
+.scala_dependencies
+.cache-main
