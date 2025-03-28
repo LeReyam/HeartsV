@@ -22,7 +22,7 @@ metals.sbt
 .tasty
 
 # sbt
-project/project/
+Hearts/project/project/
 project/target/
 target/
 
