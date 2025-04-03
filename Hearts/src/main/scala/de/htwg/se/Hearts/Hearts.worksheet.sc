@@ -6,3 +6,4 @@ x + y
 y + y
 x + x
 val z = 5
+val s = "hello"
