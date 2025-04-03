@@ -5,3 +5,4 @@ x + x
 x + y
 y + y
 x + x
+val z = 5
