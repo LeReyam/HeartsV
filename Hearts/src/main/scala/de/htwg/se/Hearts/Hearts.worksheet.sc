@@ -8,3 +8,4 @@ x + x
 val z = 5
 val s = "hello"
 val a = "test"
+val h = "bye"
