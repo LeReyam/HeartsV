@@ -1,15 +1,24 @@
 package de.htwg.se.Hearts
-@main def hello(): Unit =
-  println()
-  println("Round 1:")
-  print("Stich: ")
-  println(trick)
-  print("Hand: ")
-  println(handcards)
-  println("Card to play: ")
+import de.htwg.se.Hearts.model
+import de.htwg.se.Hearts.game.*
 
-//def msg = "I was compiled by Scala 3. :)"
 
-def trick = "2Kreuz,5Kreuz,DamePik,"
+// chcp 65001
 
-def handcards = "4Kreuz,7Kreuz,5Pik,BubePik,5Herz,7Herz"
+
+
+@main def runHearts(): Unit = {
+  // Definiere die Spielernamen
+  val playerNames = List("Alice", "Bob", "Carol", "Dave")
+
+  // Erstelle und mische das Deck
+  val deck = createDeck()
+
+  // Teile die Karten an die Spieler aus
+  val players = shuffleAndDeal(deck, playerNames)
+
+  // Gib die Karten jedes Spielers aus
+  players.foreach { player =>
+    println(player)  // Aufruf der toString-Methode von Player, die auch die Karten ausgibt
+  }
+}

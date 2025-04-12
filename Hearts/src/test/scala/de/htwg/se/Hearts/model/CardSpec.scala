@@ -8,28 +8,38 @@ class CardSpec extends AnyWordSpec with Matchers {
   "A Card" should {
 
     "have a rank and a suit" in {
-      val card = Card("Q", Suit.Spades)
-      card.rank should be ("Q")
+      val card = Card(Rank.Queen, Suit.Spades)
+      card.rank should be (Rank.Queen)
       card.suit should be (Suit.Spades)
     }
 
-    "have a rank and a different suit" in {
-      val card = Card("Q", Suit.Hearts)
-      card.rank should be ("Q")
-      card.suit should be (Suit.Hearts)
-    }
-
     "show the correct string with suit symbol" in {
-      val card = Card("10", Suit.Hearts)
-      card.toString should be ("10\u2665") // or "10♥"
+      val cardJ = Card(Rank.Jack, Suit.Hearts)
+      cardJ.toString should be ("J\u2665")
+      val cardQ = Card(Rank.Queen, Suit.Hearts)
+      cardQ.toString should be ("Q\u2665")
+      val cardK = Card(Rank.King, Suit.Hearts)
+      cardK.toString should be ("K\u2665")
+      val card10 = Card(Rank.Ten, Suit.Hearts)
+      card10.toString should be ("10\u2665")
+      val card9 = Card(Rank.Nine, Suit.Hearts)
+      card9.toString should be ("9\u2665")
+      val card8 = Card(Rank.Eight, Suit.Hearts)
+      card8.toString should be ("8\u2665")
+      val card7 = Card(Rank.Seven, Suit.Hearts)
+      card7.toString should be ("7\u2665")
+      val card6 = Card(Rank.Six, Suit.Hearts)
+      card6.toString should be ("6\u2665")
+      val card5 = Card(Rank.Five, Suit.Hearts)
+      card5.toString should be ("5\u2665")
+      val card4 = Card(Rank.Four, Suit.Hearts)
+      card4.toString should be ("4\u2665")
+      val card3 = Card(Rank.Three, Suit.Spades)
+      card3.toString should be ("3\u2660")
+      val card2 = Card(Rank.Two, Suit.Clubs)
+      card2.toString should be ("2\u2663")
+      val cardA = Card(Rank.Ace, Suit.Diamonds)
+      cardA.toString should be ("A\u2666")
     }
-
-    "display correct symbols for each suit" in {
-      Suit.Hearts.symbol should be ("\u2665")    // ♥
-      Suit.Diamonds.symbol should be ("\u2666")  // ♦
-      Suit.Spades.symbol should be ("\u2660")    // ♠
-      Suit.Clubs.symbol should be ("\u2663")     // ♣
-    }
-
   }
 }
