@@ -7,18 +7,12 @@ import de.htwg.se.Hearts.game.*
 
 
 
-@main def runHearts(): Unit = {
-  // Definiere die Spielernamen
+import de.htwg.se.Hearts.game.Dealer
+import de.htwg.se.Hearts.game.GameController
+
+@main def runHearts(): Unit =
   val playerNames = List("Alice", "Bob", "Carol", "Dave")
+  val deck = Dealer.createDeck()
+  val players = Dealer.shuffleAndDeal(deck, playerNames)
 
-  // Erstelle und mische das Deck
-  val deck = createDeck()
-
-  // Teile die Karten an die Spieler aus
-  val players = shuffleAndDeal(deck, playerNames)
-
-  // Gib die Karten jedes Spielers aus
-  players.foreach { player =>
-    println(player)  // Aufruf der toString-Methode von Player, die auch die Karten ausgibt
-  }
-}
+  GameController.startGame(players)
