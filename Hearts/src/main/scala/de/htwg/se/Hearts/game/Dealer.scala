@@ -11,5 +11,5 @@ object Dealer:
 
   def shuffleAndDeal(deck: List[Card], playerNames: List[String]): List[Player] =
     val shuffled = util.Random.shuffle(deck)
-    val hands = shuffled.grouped(13).toList
+    val hands = shuffled.grouped(deck.length/playerNames.length).toList
     playerNames.zip(hands).map { case (name, hand) => Player(name, hand) }

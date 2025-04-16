@@ -6,7 +6,7 @@ object Game:
   def playRound(players: List[Player]): Unit =
     val trick = collection.mutable.ListBuffer[Card]()
     players.foreach { player =>
-      player.showHand()
+      print(player.showHandString())
       val cardToPlay = player.hand.head // vereinfachte Logik
       player.playCard(cardToPlay)
       trick += cardToPlay

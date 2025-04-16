@@ -13,12 +13,10 @@ case class Player(name: String, var hand: List[Card]) {
     println(s"$name spielt: $card")
   }
 
-  def showHandString(): String =
+  def showHandString(): String = {
   s"$name's hand: ${hand.mkString(", ")}\n"
+  }
 
-
-  def showHand(): Unit =
-  println(showHandString())
 
 }
 
