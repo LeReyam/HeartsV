@@ -4,7 +4,7 @@ import de.htwg.se.Hearts.model._
 
 object GameController:
   def startGame(players: List[Player]): Unit =
-    val totalRounds = 13
+    val totalRounds = players.head.hand.length
     for round <- 1 to totalRounds do
       println(s"Runde $round:")
       Game.playRound(players)
