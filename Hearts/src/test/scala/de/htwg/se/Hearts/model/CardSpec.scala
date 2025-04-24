@@ -41,5 +41,15 @@ class CardSpec extends AnyWordSpec with Matchers {
       val cardA = Card(Rank.Ace, Suit.Diamonds)
       cardA.toString should be ("A\u2666")
     }
+
+    "be comparable" in {
+      val card1 = Card(Rank.Two, Suit.Hearts)
+      val card2 = Card(Rank.Three, Suit.Spades)
+      val card3 = Card(Rank.Two, Suit.Diamonds)
+
+      card1.compare(card2) should be < 0
+      card2.compare(card1) should be > 0
+      card1.compare(card3) shouldEqual 0
+    }
   }
 }
