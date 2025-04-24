@@ -22,20 +22,27 @@ class DealerSpec extends AnyWordSpec with Matchers {
     }
   }
 
-  "A shuffle an deal" should{
+  "A shuffle" should{
 
     "Mix all the cards" in {
-        val outcome1 = List(Card(Rank.Ace,Suit.Clubs))
-        val outcome2 = List(Card(Rank.Eight,Suit.Spades))
-        val listoutcome = List(outcome1,outcome2)
+        val outcome1 = List(Card(Rank.Ace,Suit.Clubs),Card(Rank.Eight,Suit.Spades))
+        val outcome2 = List(Card(Rank.Eight,Suit.Spades),Card(Rank.Ace,Suit.Clubs))
         val deck = List(Card(Rank.Ace,Suit.Clubs),Card(Rank.Eight,Suit.Spades))
-        val playernames = List("Alice","Dave")
-        val playstate = Dealer.shuffleAndDeal(deck,playernames)
-        playstate(0).hand should(
+        val shuffledDeck = Dealer.shuffle(deck)
+        shuffledDeck should(
           equal(outcome1) or
           equal(outcome2)
         )
 
+    }
+  }
+
+  "A deal" should{
+    "split all cards between players" in {
+      val deck = Dealer.createDeck()
+      val playerNames = List("Alice", "Bob", "Charlie", "Diana")
+      val players = Dealer.deal(deck,playerNames)
+      players(0).hand should contain theSameElementsAs deck.take(deck.length / playerNames.length)
     }
   }
 }
