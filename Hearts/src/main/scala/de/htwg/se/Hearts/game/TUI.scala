@@ -2,8 +2,12 @@ package de.htwg.se.Hearts.game
 
 import de.htwg.se.Hearts.game.{Dealer, GameController}
 
-class TUI(readLine: () => String = scala.io.StdIn.readLine, printlnFunc: String => Unit = println):
-
+class TUI(
+  readLine: () => String = scala.io.StdIn.readLine,
+  printlnFunc: String => Unit = println,
+  dealer: DealerService = Dealer,
+  game: GameControllerService = GameController
+):
 	def start(): Unit =
 		val playerNames = getPlayerNames()
 		val deck = Dealer.createDeck()
