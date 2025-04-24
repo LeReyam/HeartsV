@@ -2,7 +2,7 @@ package de.htwg.se.Hearts.game
 
 import de.htwg.se.Hearts.model._
 
-object GameController:
+object GameController extends GameControllerService:
   def startGame(players: List[Player]): Unit =
     val totalRounds = players.head.hand.length
     for round <- 1 to totalRounds do
