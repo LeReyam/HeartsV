@@ -9,10 +9,13 @@ object Dealer:
       rank <- Rank.values.toList
     yield Card(rank, suit)
 
-  def shuffleAndDeal(deck: List[Card], playerNames: List[String]): List[Player] =
-    var shuffled = util.Random.shuffle(deck)
-    if (playerNames.length == 3){
-      shuffled = shuffled.filterNot(_ == shuffled.head)
-    }
-    val hands = shuffled.grouped(deck.length/playerNames.length).toList
+  def shuffle(deck: List[Card]): List[Card] =
+    util.Random.shuffle(deck)
+
+
+  def deal(deck: List[Card],playerNames: List[String]): List[Player] =
+    val leftovers = deck.length /playerNames.length
+    var reducedDeck = deck.filterNot(_ == deck.take(leftovers))
+
+    val hands = deck.grouped(deck.length/playerNames.length).toList
     playerNames.zip(hands).map { case (name, hand) => Player(name, hand) }
