@@ -7,7 +7,8 @@ class TUI(readLine: () => String = scala.io.StdIn.readLine, printlnFunc: String 
 	def start(): Unit =
 		val playerNames = getPlayerNames()
 		val deck = Dealer.createDeck()
-		val players = Dealer.shuffleAndDeal(deck, playerNames)
+		val shuffledDeck = Dealer.shuffle(deck)
+		val players = Dealer.deal(shuffledDeck,playerNames)
 		GameController.startGame(players)
 
 
