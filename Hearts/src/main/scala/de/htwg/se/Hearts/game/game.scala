@@ -11,7 +11,15 @@ object Game extends GameService:
       player.playCard(cardToPlay)
       trick += ((cardToPlay, player))
     }
-    val winnerName = trick.maxBy{ case (card, _) => card}
-    println(winnerName)
+    // NEW: Get the suit of the first card played
+    val leadingSuit = trick.head._1.suit
+
+    // NEW: Only consider cards with matching suit for winning
+    val winner = trick
+    .filter { case (card, _) => card.suit == leadingSuit }
+    .maxBy { case (card, _) => card }
+
+
+    println(winner)
     // Gewinnerlogik kann später noch cleverer werden
     println("Stich gespielt.\n")
