@@ -2,7 +2,7 @@ package de.htwg.se.Hearts.game
 
 import de.htwg.se.Hearts.model._
 
-object Game:
+object Game extends GameService:
   def playRound(players: List[Player]): Unit =
     var trick = collection.mutable.ListBuffer[(Card, Player)]()
     players.foreach { player =>
