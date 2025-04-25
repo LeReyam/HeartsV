@@ -9,26 +9,19 @@ class TUISpec extends AnyWordSpec with Matchers:
   "A TUI" should {
 
     "trigger real readLine and println for coverage" in {
-            // Simulierte Eingabe über Iterator
+
             val simulatedInput = Iterator("TestUser\n")
 
-            // Mock readLine als Funktion, die die Eingabe von simulatedInput liest
             val mockReadLine: () => String = () => simulatedInput.next()
 
-            // Fange die Ausgabe mit ByteArrayOutputStream ab
             val output = new java.io.ByteArrayOutputStream()
 
-            // Umleitung von println-Ausgabe
-            Console.withOut(new java.io.PrintStream(output)) {
-                // Teste readLine und println
-                val input = mockReadLine() // Wir simulieren das "TestUser" als Eingabe
-                println(s"Input was: $input") // Gibt die Eingabe in der Ausgabe wieder
-            }
+            Console.withOut(new java.io.PrintStream(output)):
+                val input = mockReadLine()
+                println(s"Input was: $input")
 
-            // Jetzt prüfen wir, ob die Ausgabe korrekt abgefangen wurde
             output.toString should include ("Input was: TestUser")
     }
-
 
     "collect player names based on input" in {
             val input = Iterator("2", "Alice", "Bob")
@@ -56,39 +49,34 @@ class TUISpec extends AnyWordSpec with Matchers:
 
         // Mock DealerService
         val mockDealer = new DealerService:
-            def createDeck() = {
-            println("Creating deck...")  // Debugging Ausgabe
-            List.fill(4)(dummyCard)
-            }
-            def shuffle(deck: List[Card]) = {
-            println(s"Shuffling deck: $deck")  // Debugging Ausgabe
-            deck
-            }
-            def deal(deck: List[Card], names: List[String]) = {
-            println(s"Dealing deck: $deck")  // Debugging Ausgabe
-            val dealtPlayers = names.map(name => Player(name + "_mocked", List(dummyCard)))
-            println(s"Dealt players: $dealtPlayers")  // Debugging Ausgabe
-            dealtPlayers
-            }
+            def createDeck() =
+                println("Creating deck...")
+                List.fill(4)(dummyCard)
+
+            def shuffle(deck: List[Card]) =
+                println(s"Shuffling deck: $deck")
+                deck
+
+            def deal(deck: List[Card], names: List[String]) =
+                println(s"Dealing deck: $deck")
+                val dealtPlayers = names.map(name => Player(name + "_mocked", List(dummyCard)))
+                println(s"Dealt players: $dealtPlayers")
+                dealtPlayers
+
 
         var startedPlayers: List[Player] = Nil
-        // Mock GameControllerService
-        val mockGame = new GameControllerService:
-            def startGame(players: List[Player]): Unit = {
-            println(s"Started game with players: $players")  // Debugging Ausgabe
-            startedPlayers = players
-            }
 
-        // Erstelle die Instanz von TUI, wodurch der Konstruktor aufgerufen wird
+        val mockGame = new GameControllerService:
+            def startGame(players: List[Player]): Unit =
+                println(s"Started game with players: $players")
+                startedPlayers = players
+
         val tui = new TUI(mockReadLine, mockPrintln, mockDealer, mockGame)
 
-        // Rufe eine Methode auf, die den Konstruktor und die Interaktionen mit der Konsole auslöst
         tui.start()
 
-        // Prüfe, ob die Spieler korrekt gesetzt wurden
         startedPlayers.map(_.name) shouldEqual List("Alice_mocked", "Bob_mocked")
 
-        // Prüfe, ob die println-Ausgaben korrekt sind
         output should contain ("Wie viele Spieler seid ihr?")
         output should contain ("Bitte den Namen des Spielers angeben:")
         output should contain ("Spieler: List(Alice, Bob)")
