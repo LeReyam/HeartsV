@@ -8,6 +8,5 @@ object GameController extends GameControllerService:
     for round <- 1 to totalRounds do
       println(s"Runde $round:")
       Game.playRound(players)
-      // Dummy-Stich: später sinnvoll befüllen
       Scoring.updateScores(players, List())
       players.foreach(p => println(s"${p.name}: ${p.points} Punkte"))
