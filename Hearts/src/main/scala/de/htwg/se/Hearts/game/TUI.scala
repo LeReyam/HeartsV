@@ -1,5 +1,6 @@
 package de.htwg.se.Hearts.game
 
+import de.htwg.se.Hearts.model.*
 import de.htwg.se.Hearts.game.{Dealer, GameController}
 import scala.io.StdIn.readLine
 
@@ -23,3 +24,10 @@ class TUI():
     val playerList = names.toList
     println(s"Spieler: $playerList")
     playerList
+
+  def displayPlayedCards(playedCards: List[PlayedCard]): Unit =
+  playedCards.foreach { played =>
+    println(s"${played.getPlayer.name}: ${played.getCard.rank}${played.getCard.suit}")
+  }
+
+

@@ -24,5 +24,4 @@ object Game extends GameService:
     // Gewinnerlogik kann später noch cleverer werden
     println("Stich gespielt.\n")
 
-    // Gib den Trick zurück, damit er für die Punkteberechnung verwendet werden kann
     trick
