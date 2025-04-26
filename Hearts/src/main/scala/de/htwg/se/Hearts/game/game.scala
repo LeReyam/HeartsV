@@ -1,10 +1,11 @@
 package de.htwg.se.Hearts.game
 
 import de.htwg.se.Hearts.model._
+import scala.collection.mutable.ListBuffer
 
 object Game extends GameService:
-  def playRound(players: List[Player]): Unit =
-    var trick = collection.mutable.ListBuffer[(Card, Player)]()
+  def playRound(players: List[Player]): ListBuffer[(Card, Player)] =
+    var trick = ListBuffer[(Card, Player)]()
     players.foreach { player =>
       print(player.showHandString())
       val cardToPlay = player.hand.head // vereinfachte Logik
@@ -16,10 +17,12 @@ object Game extends GameService:
 
     // NEW: Only consider cards with matching suit for winning
     val winner = trick
-    .filter { case (card, _) => card.suit == leadingSuit }
-    .maxBy { case (card, _) => card }
-
+      .filter { case (card, _) => card.suit == leadingSuit }
+      .maxBy { case (card, _) => card }
 
     println(winner)
     // Gewinnerlogik kann später noch cleverer werden
     println("Stich gespielt.\n")
+
+    // Gib den Trick zurück, damit er für die Punkteberechnung verwendet werden kann
+    trick
