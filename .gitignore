@@ -1,4 +1,5 @@
-
+#json settings von VS or blob
+.json
 # bloop and metals
 .bloop
 .bsp
