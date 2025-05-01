@@ -4,19 +4,13 @@ import scala.collection.mutable.ListBuffer
 
 
 
-case class Player(name: String, var hand: List[Card]) {
-  var points: Int = 0  // Punkte für das Spiel
+class Player(val name: String, private var _hand: List[Card]) extends Observable {
+  def hand: List[Card] = _hand
 
-  // Spieler legt eine Karte ab
   def playCard(card: Card): Unit = {
-    hand = hand.filterNot(_ == card)  // Entfernt die gespielte Karte aus der Hand
-    println(s"$name spielt: $card")
+    _hand = _hand.filterNot(_ == card)
+    //println(s"$name spielt: $card")
+    notifyObservers()
   }
-
-  def showHandString(): String = {
-  s"$name's hand: ${hand.mkString(", ")}\n"
-  }
-
-
 }
 

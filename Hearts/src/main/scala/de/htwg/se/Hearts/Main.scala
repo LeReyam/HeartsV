@@ -1,13 +1,22 @@
-package de.htwg.se.Hearts
-import de.htwg.se.Hearts.model
-import de.htwg.se.Hearts.game.*
-import scala.io.StdIn.readLine
-import de.htwg.se.Hearts.game.Dealer
-import de.htwg.se.Hearts.game.GameController
-import scala.compiletime.ops.double
-
-// chcp 65001
+import de.htwg.se.Hearts.model._
+import de.htwg.se.Hearts.view._
+import de.htwg.se.Hearts.controller._
 
 @main def runHearts(): Unit =
-  val tui = new TUI()
-  tui.start()
+  val alice = new Player("Alice", List(
+    Card(Rank.Two, Suit.Hearts),
+    Card(Rank.Ace, Suit.Spades)
+  ))
+  val bob = new Player("Bob", List(
+    Card(Rank.Ten, Suit.Clubs),
+    Card(Rank.King, Suit.Diamonds)
+  ))
+
+  val game = new Game(List(alice, bob))
+  val view = new ConsoleView
+  val controller = new GameController(game, view)
+
+  controller.startGame()
+
+
+

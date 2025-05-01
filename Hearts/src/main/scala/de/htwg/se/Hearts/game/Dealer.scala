@@ -1,7 +1,7 @@
 package de.htwg.se.Hearts.game
 import de.htwg.se.Hearts.model.*
 
-object Dealer extends DealerService:
+object Dealer:
   def createDeck(): List[Card] =
     for
       suit <- Suit.values.toList
