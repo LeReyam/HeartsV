@@ -2,7 +2,6 @@ package de.htwg.se.Hearts.model
 
 import scala.math.Ordered
 
-// A Card has a rank and a suit
 case class Card(rank: Rank, suit: Suit) extends Ordered[Card] {
   override def toString: String = s"${rank.toString}${suit.toString}"
 

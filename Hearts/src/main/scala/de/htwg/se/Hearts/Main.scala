@@ -16,7 +16,6 @@ import de.htwg.se.Hearts.controller._
 
   val game = new Game(List(alice, bob))
   val controller = new GameController(game)
-  val view = new ConsoleView(controller)
-
-  view.run()
+  val gameView = new GameView(controller)
+  controller.runGame()
 

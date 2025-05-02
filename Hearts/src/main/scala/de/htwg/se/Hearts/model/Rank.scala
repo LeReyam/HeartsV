@@ -30,6 +30,5 @@ enum Rank(val value: Int) extends Ordered[Rank]:
     case King  => "K"
     case Ace   => "A"
 
-  // Vergleichen für maxBy etc.
   override def compare(that: Rank): Int =
     this.value.compare(that.value)

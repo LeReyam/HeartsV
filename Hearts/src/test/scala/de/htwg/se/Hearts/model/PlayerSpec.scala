@@ -9,10 +9,48 @@ import org.scalatest.matchers.should.Matchers
 class PlayerSpec extends AnyWordSpec with Matchers {
 
   "A Player" should {
+    "have a name and hand" in {
+      val player = new Player("Alice", List(
+        Card(Rank.Ten, Suit.Hearts),
+        Card(Rank.Five, Suit.Hearts)
+      ))
+
+      player.name should be("Alice")
+      player.hand should have length 2
+      player.hand should contain(Card(Rank.Ten, Suit.Hearts))
+      player.hand should contain(Card(Rank.Five, Suit.Hearts))
+    }
+
     "update hand after playing a Card" in {
-      val player = new Player("Alice", List(Card(suit = Suit.Hearts,rank = Rank.Ten),Card(suit = Suit.Hearts,rank = Rank.Five)))
-      player.playCard(Card(Rank.Five,Suit.Hearts))
-      player.hand should contain theSameElementsAs (List(Card(suit = Suit.Hearts,rank = Rank.Ten)))
+      val player = new Player("Alice", List(
+        Card(Rank.Ten, Suit.Hearts),
+        Card(Rank.Five, Suit.Hearts)
+      ))
+
+      player.playCard(Card(Rank.Five, Suit.Hearts))
+      player.hand should have length 1
+      player.hand should contain only Card(Rank.Ten, Suit.Hearts)
+    }
+
+    "handle playing a card that is not in hand" in {
+      val player = new Player("Alice", List(
+        Card(Rank.Ten, Suit.Hearts),
+        Card(Rank.Five, Suit.Hearts)
+      ))
+
+      // Playing a card not in hand should not change the hand
+      player.playCard(Card(Rank.Ace, Suit.Spades))
+      player.hand should have length 2
+      player.hand should contain(Card(Rank.Ten, Suit.Hearts))
+      player.hand should contain(Card(Rank.Five, Suit.Hearts))
+    }
+
+    "handle empty hand" in {
+      val player = new Player("Alice", List())
+      player.hand should be(empty)
+
+      // Playing a card with empty hand should not cause errors
+      noException should be thrownBy player.playCard(Card(Rank.Ace, Suit.Spades))
     }
   }
 }
