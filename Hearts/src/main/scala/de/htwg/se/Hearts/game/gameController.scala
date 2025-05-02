@@ -8,6 +8,7 @@ import scala.io.StdIn.readLine
 
 class GameController(game: Game, view: View) {
   var currentPot: ListBuffer[Card] = ListBuffer()  // Der aktuelle Pott
+  var currentPlayerIndex: Int = 0  // Aktueller Spielerindex, beginnt bei 0 (erster Spieler)
 
   def startGame(): Unit = {
     var playing = true
@@ -15,8 +16,8 @@ class GameController(game: Game, view: View) {
     // Erstelle ein `Players`-Objekt aus der Liste der Spieler im Spiel
     val playerList = Players(game.players)
 
-    // Aktueller Spielerindex, beginnt bei 0 (erster Spieler)
-    var currentPlayerIndex = 0
+    // Setze den aktuellen Spielerindex zurück auf 0
+    currentPlayerIndex = 0
 
     while (playing) {
       // Aktueller Spieler basierend auf dem Index
@@ -54,34 +55,25 @@ class GameController(game: Game, view: View) {
   }
 
   def readCardInput(): Option[Card] = {
-    println("Welche Karte möchtest du spielen? (z.B. 'Hearts Two')")
-    val input = readLine().trim.split(" ")
+    // Aktueller Spieler basierend auf dem Index
+    val currentPlayer = game.players(currentPlayerIndex)
 
-    if (input.length != 2) {
-      println("Ungültiges Format. Bitte 'Suit Rank' eingeben.")
-      None
-    } else {
-      val suitStr = input(0).capitalize
-      val rankStr = input(1).capitalize
+    println("Welche Karte möchtest du spielen? (Gib den Index ein)")
+    val input = readLine().trim
 
-      val maybeSuit = suitStr match {
-        case "Hearts"   => Some(Suit.Hearts)
-        case "Spades"   => Some(Suit.Spades)
-        case "Diamonds" => Some(Suit.Diamonds)
-        case "Clubs"    => Some(Suit.Clubs)
-        case _ => None
+    try {
+      val index = input.toInt
+      if (index >= 0 && index < currentPlayer.hand.length) {
+        val selectedCard = currentPlayer.hand(index)
+        Some(selectedCard)
+      } else {
+        view.displayMessage(s"Ungültiger Index: $index. Bitte einen gültigen Index eingeben.")
+        None
       }
-
-      val maybeRank = Rank.values.find(_.toString == rankStr)
-
-      (maybeSuit, maybeRank) match {
-        case (Some(suit), Some(rank)) =>
-          println(s"Du hast gewählt: ${rank.toString} of ${suit.toString}")
-          Some(Card(rank, suit))
-        case _ =>
-          println(s"Ungültige Eingabe: $suitStr $rankStr. Bitte gültige Karte eingeben.")
-          None
-      }
+    } catch {
+      case _: NumberFormatException =>
+        view.displayMessage("Bitte eine Zahl eingeben.")
+        None
     }
   }
 }
