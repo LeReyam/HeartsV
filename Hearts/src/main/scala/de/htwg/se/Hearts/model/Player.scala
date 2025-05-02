@@ -1,5 +1,4 @@
 package de.htwg.se.Hearts.model
-import de.htwg.se.Hearts.model.Card
 import scala.collection.mutable.ListBuffer
 
 

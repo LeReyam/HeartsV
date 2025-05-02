@@ -1,13 +1,12 @@
 import de.htwg.se.Hearts.model._
 import de.htwg.se.Hearts.view._
-import de.htwg.se.Hearts.game._
+import de.htwg.se.Hearts.controller._
 
 @main def runHearts(): Unit =
   val alice = new Player("Alice", List(
     Card(Rank.Two, Suit.Hearts),
     Card(Rank.Ace, Suit.Spades),
     Card(Rank.Jack, Suit.Diamonds)
-
   ))
   val bob = new Player("Bob", List(
     Card(Rank.Ten, Suit.Clubs),
@@ -16,10 +15,8 @@ import de.htwg.se.Hearts.game._
   ))
 
   val game = new Game(List(alice, bob))
-  val view = new ConsoleView
-  val controller = new GameController(game, view)
+  val controller = new GameController(game)
+  val view = new ConsoleView(controller)
 
-  controller.startGame()
-
-
+  view.run()
 
