@@ -1,6 +1,6 @@
 import de.htwg.se.Hearts.model._
 import de.htwg.se.Hearts.view._
-import de.htwg.se.Hearts.controller._
+import de.htwg.se.Hearts.game._
 
 @main def runHearts(): Unit =
   val alice = new Player("Alice", List(
