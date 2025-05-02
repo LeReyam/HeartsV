@@ -1,8 +1,6 @@
 package de.htwg.se.Hearts.game
 
 import de.htwg.se.Hearts.model.Players
-
-
 import scala.collection.mutable.ListBuffer
 import de.htwg.se.Hearts.model.*
 import de.htwg.se.Hearts.view.*
@@ -13,22 +11,33 @@ class GameController(game: Game, view: View) {
 
   def startGame(): Unit = {
     var playing = true
-    val player = game.players.head  // Aktuell nur 1 Spieler (z. B. Alice)
 
-    // Erstelle ein `Players`-Objekt aus der Liste der Spieler
-    val PlayerList = Players(game.players)
+    // Erstelle ein `Players`-Objekt aus der Liste der Spieler im Spiel
+    val playerList = Players(game.players)
+
+    // Aktueller Spielerindex, beginnt bei 0 (erster Spieler)
+    var currentPlayerIndex = 0
 
     while (playing) {
+      // Aktueller Spieler basierend auf dem Index
+      val currentPlayer = game.players(currentPlayerIndex)
+
       // Übergibt das `Players`-Objekt und den `currentPot` an die View
-      view.displayGameState(PlayerList, currentPot)
+      view.displayGameState(playerList, currentPot)
+
+      // Zeige an, welcher Spieler am Zug ist
+      view.displayMessage(s"${currentPlayer.name} ist am Zug.")
 
       readCardInput() match {
         case Some(card) =>
-          if (player.hand.contains(card)) {
-            player.playCard(card)
+          if (currentPlayer.hand.contains(card)) {
+            currentPlayer.playCard(card)
             // Füge die Karte zum aktuellen Pott hinzu
             currentPot += card
-            view.displayMessage(s"${player.name} spielt: ${card.rank} of ${card.suit}")
+            view.displayMessage(s"${currentPlayer.name} spielt: ${card.rank} of ${card.suit}")
+
+            // Wechsle zum nächsten Spieler
+            currentPlayerIndex = (currentPlayerIndex + 1) % game.players.length
           } else {
             view.displayMessage("Diese Karte ist nicht in deiner Hand.")
           }
@@ -36,8 +45,9 @@ class GameController(game: Game, view: View) {
           view.displayMessage("Ungültige Eingabe. Bitte erneut versuchen.")
       }
 
-      if (player.hand.isEmpty) {
-        view.displayMessage("Alle Karten gespielt. Spiel beendet.")
+      // Prüfe, ob alle Spieler keine Karten mehr haben
+      if (game.players.forall(_.hand.isEmpty)) {
+        view.displayMessage("Alle Spieler haben ihre Karten gespielt. Spiel beendet.")
         playing = false
       }
     }
