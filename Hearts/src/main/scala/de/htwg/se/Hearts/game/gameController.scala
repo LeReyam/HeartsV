@@ -35,7 +35,7 @@ class GameController(game: Game, view: View) {
             currentPlayer.playCard(card)
             // Füge die Karte zum aktuellen Pott hinzu
             currentPot += card
-            view.displayMessage(s"${currentPlayer.name} spielt: ${card.rank} of ${card.suit}")
+            //view.displayMessage(s"${currentPlayer.name} spielt: ${card.rank} of ${card.suit}")
 
             // Wechsle zum nächsten Spieler
             currentPlayerIndex = (currentPlayerIndex + 1) % game.players.length
