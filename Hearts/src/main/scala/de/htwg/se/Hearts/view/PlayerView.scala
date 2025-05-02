@@ -1,5 +1,5 @@
 package de.htwg.se.Hearts.view
-import de.htwg.se.Hearts.game.*
+import de.htwg.se.Hearts.controller.*
 import de.htwg.se.Hearts.model.*
 
 class PlayerView(player: Player) extends Observer {

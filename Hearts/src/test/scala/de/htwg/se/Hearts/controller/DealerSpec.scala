@@ -1,6 +1,7 @@
-package de.htwg.se.Hearts.game
+package de.htwg.se.Hearts.controller
 
 import de.htwg.se.Hearts.model.*
+import de.htwg.se.Hearts.controller.Dealer
 
 import org.scalatest.wordspec.AnyWordSpec
 import org.scalatest.matchers.should.Matchers
@@ -12,7 +13,6 @@ class DealerSpec extends AnyWordSpec with Matchers {
     "generate a complete Deck" in {
       val deck = Dealer.createDeck()
       deck should have length 52
-
     }
 
     "have specific cards in it" in {
@@ -22,22 +22,20 @@ class DealerSpec extends AnyWordSpec with Matchers {
     }
   }
 
-  "A shuffle" should{
-
+  "A shuffle" should {
     "Mix all the cards" in {
-        val outcome1 = List(Card(Rank.Ace,Suit.Clubs),Card(Rank.Eight,Suit.Spades))
-        val outcome2 = List(Card(Rank.Eight,Suit.Spades),Card(Rank.Ace,Suit.Clubs))
-        val deck = List(Card(Rank.Ace,Suit.Clubs),Card(Rank.Eight,Suit.Spades))
-        val shuffledDeck = Dealer.shuffle(deck)
-        shuffledDeck should(
-          equal(outcome1) or
-          equal(outcome2)
-        )
-
+      val outcome1 = List(Card(Rank.Ace,Suit.Clubs),Card(Rank.Eight,Suit.Spades))
+      val outcome2 = List(Card(Rank.Eight,Suit.Spades),Card(Rank.Ace,Suit.Clubs))
+      val deck = List(Card(Rank.Ace,Suit.Clubs),Card(Rank.Eight,Suit.Spades))
+      val shuffledDeck = Dealer.shuffle(deck)
+      shuffledDeck should(
+        equal(outcome1) or
+        equal(outcome2)
+      )
     }
   }
 
-  "A deal" should{
+  "A deal" should {
     "split all cards between players" in {
       val deck = Dealer.createDeck()
       val playerNames = List("Alice", "Bob", "Charlie", "Diana")

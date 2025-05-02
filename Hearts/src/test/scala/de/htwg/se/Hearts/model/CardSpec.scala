@@ -2,6 +2,7 @@ package de.htwg.se.Hearts.model
 
 import org.scalatest.wordspec.AnyWordSpec
 import org.scalatest.matchers.should.Matchers
+import scala.math.Ordered.orderingToOrdered
 
 class CardSpec extends AnyWordSpec with Matchers {
 
