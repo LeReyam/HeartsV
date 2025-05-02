@@ -4,10 +4,14 @@ import de.htwg.se.Hearts.model._
 import scala.collection.mutable.ListBuffer
 
 object Game extends GameService:
+  // Create an instance of TUI
+  private val tui = new TUI()
+
   def playRound(players: List[Player]): ListBuffer[(Card, Player)] =
     var trick = ListBuffer[(Card, Player)]()
     players.foreach { player =>
-      print(player.showHandString())
+      tui.displayHandCards(List(player))
+
       val cardToPlay = player.hand.head // vereinfachte Logik
       player.playCard(cardToPlay)
       trick += ((cardToPlay, player))
