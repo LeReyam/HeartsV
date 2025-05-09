@@ -1,4 +1,4 @@
-[![Coverage Status](https://coveralls.io/repos/github/LeReyam/HeartsV/badge.svg)](https://coveralls.io/github/LeReyam/HeartsV)
+[![Coverage Status](https://coveralls.io/repos/github/LeReyam/HeartsV/badge.svg?branch=master)](https://coveralls.io/github/LeReyam/HeartsV?branch=master)
 ## sbt project compiled with Scala 3
 
 ### Usage
