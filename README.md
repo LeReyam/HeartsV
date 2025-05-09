@@ -7,8 +7,8 @@ Ein Scala-Projekt zur Umsetzung des Kartenspiels Hearts im Rahmen einer Vorlesun
 
 ## Projektstruktur
 
-- `src/main/scala` – Hauptcode
-- `src/test/scala` – Tests
+- `src/main/scala/de/htwg/se/Hearts` – Hauptcode
+- `src/test//scala/de/htwg/se/Hearts` – Tests
 - `build.sbt` – Build-Konfiguration
 - `.github/workflows/ci.yml` – GitHub Actions Workflow
 
