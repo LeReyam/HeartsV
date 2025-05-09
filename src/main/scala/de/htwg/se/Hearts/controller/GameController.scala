@@ -4,6 +4,7 @@ import de.htwg.se.Hearts.model.*
 import scala.collection.mutable.ListBuffer
 import scala.io.StdIn.readLine
 
+
 class GameController(game: Game) extends Observable {
   private var currentPot: ListBuffer[Card] = ListBuffer()
   private var currentPlayerIndex: Int = 0
