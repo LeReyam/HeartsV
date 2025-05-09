@@ -39,7 +39,6 @@ class GameController(game: Game) extends Observable {
     }
   }
 
-
   // Methode zum Starten und Durchführen des Spiels
   def runGame(): Unit = {
     var playing = true
