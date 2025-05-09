@@ -5,9 +5,7 @@ on:
     branches: ['**']  # Alle Branches
   pull_request:
     branches:
-      - master
-      - main
-      - develop
+      - '**'  # Alle Branches
 
 jobs:
   build:
