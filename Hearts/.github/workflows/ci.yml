@@ -13,7 +13,12 @@ jobs:
         uses: actions/setup-java@v3
         with:
           distribution: 'temurin'
-          java-version: '17'
+          java-version: '21'
+
+      - name: install sbt
+        uses: coursier/setup-action@v1
+        with:
+          apps: sbt
 
       - name: Cache SBT
         uses: actions/cache@v3
@@ -24,10 +29,10 @@ jobs:
             ~/.coursier
           key: sbt-${{ runner.os }}-${{ hashFiles('**/build.sbt') }}
 
-      - name: Run tests with coverage
-        run: sbt clean coverage test coverageReport
-
-      - name: Submit to Coveralls
+      - name: Run tests and submit to Coveralls
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: sbt coveralls
+          COVERALLS_REPO_TOKEN: ${{ secrets.COVERALLS_REPO_TOKEN }}
+        run: |
+          sbt clean coverage test coverageReport coveralls
+
+
