@@ -1,13 +1,24 @@
-[![Coverage Status](https://coveralls.io/repos/github/LeReyam/HeartsV/badge.svg?branch=master)](https://coveralls.io/github/LeReyam/HeartsV?branch=master)
-## sbt project compiled with Scala 3
+# HeartsV
 
-### Usage
+![Build](https://github.com/LeReyam/HeartsV/actions/workflows/ci.yml/badge.svg)
+[![Coverage Status](https://coveralls.io/repos/github/LeReyam/HeartsV/badge.svg)](https://coveralls.io/github/LeReyam/HeartsV)
 
-This is a normal sbt project. You can compile code with `sbt compile`, run it with `sbt run`, and `sbt console` will start a Scala 3 REPL.
+Ein Scala-Projekt zur Umsetzung des Kartenspiels Hearts im Rahmen einer Vorlesung.
 
-### Badges
+## Projektstruktur
 
+- `src/main/scala` – Hauptcode
+- `src/test/scala` – Tests
+- `build.sbt` – Build-Konfiguration
+- `.github/workflows/ci.yml` – GitHub Actions Workflow
 
+## Continuous Integration
 
-For more information on the sbt-dotty plugin, see the
-[scala3-example-project](https://github.com/scala/scala3-example-project/blob/main/README.md).
+Dieses Projekt verwendet GitHub Actions zur automatischen Ausführung von Tests bei jedem Commit. Die Testabdeckung wird mit scoverage ermittelt und über Coveralls veröffentlicht.
+
+## Tests ausführen
+
+Lokal kannst du die Tests und die Coverage-Berichte mit folgendem Befehl ausführen:
+
+```bash
+sbt clean coverage test coverageReport

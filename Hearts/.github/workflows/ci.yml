@@ -1,38 +1,54 @@
-name: Scala CI with Coverage
+name: Continuous Integration
 
-on: [push, pull_request]
+on:
+  push:
+    branches:
+      - main
+      - Development
+      - 'feature/*'
+      - 'bugfix/*'
+  pull_request:
+    branches:
+      - main
+      - develop
 
 jobs:
-  test:
+  build:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v3
+    - name: Checkout code
+      uses: actions/checkout@v3
 
-      - name: Set up Java
-        uses: actions/setup-java@v3
-        with:
-          distribution: 'temurin'
-          java-version: '21'
+    - name: Set up JDK
+      uses: actions/setup-java@v2
+      with:
+        java-version: '21'
+        distribution: 'adoptopenjdk'
 
-      - name: install sbt
-        uses: coursier/setup-action@v1
-        with:
+    - name: install sbt
+      uses: coursier/setup-action@v1
+      with:
           apps: sbt
 
-      - name: Cache SBT
-        uses: actions/cache@v3
-        with:
-          path: |
-            ~/.ivy2/cache
-            ~/.sbt
-            ~/.coursier
-          key: sbt-${{ runner.os }}-${{ hashFiles('**/build.sbt') }}
+    - name: Cache SBT dependencies
+      uses: actions/cache@v3
+      with:
+        path: ~/.sbt
+        key: ${{ runner.os }}-sbt-${{ hashFiles('**/*.sbt') }}
+        restore-keys: |
+          ${{ runner.os }}-sbt-
 
-      - name: Run tests and submit to Coveralls
-        env:
-          COVERALLS_REPO_TOKEN: ${{ secrets.COVERALLS_REPO_TOKEN }}
-        run: |
-          sbt clean coverage test coverageReport coveralls
+    - name: Run tests and coverage
+      run: sbt clean coverage test coverageReport
 
+    - name: Upload coverage to Coveralls
+      run: sbt coveralls
+      env:
+        COVERALLS_REPO_TOKEN: ${{ secrets.COVERALLS_REPO_TOKEN }}
 
+    - name: Upload build artifacts (optional)
+      uses: actions/upload-artifact@v3
+      with:
+        name: coverage-report
+        path: target/scala-*/scoverage-report/
