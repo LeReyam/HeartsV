@@ -4,7 +4,7 @@ lazy val root = project
   .in(file("."))
   .enablePlugins(CoverallsPlugin)
   .settings(
-    name := "Hearts",
+    name := "HeartsV",
     version := "0.1.0-SNAPSHOT",
 
     scalaVersion := scala3Version,
