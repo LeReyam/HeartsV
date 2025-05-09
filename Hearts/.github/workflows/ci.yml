@@ -2,13 +2,10 @@ name: Continuous Integration
 
 on:
   push:
-    branches:
-      - main
-      - Development
-      - 'feature/*'
-      - 'bugfix/*'
+    branches: ['**']  # Alle Branches
   pull_request:
     branches:
+      - master
       - main
       - develop
 
@@ -24,7 +21,7 @@ jobs:
       uses: actions/setup-java@v2
       with:
         java-version: '21'
-        distribution: 'adoptopenjdk'
+        distribution: 'temurin'
 
     - name: install sbt
       uses: coursier/setup-action@v1
