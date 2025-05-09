@@ -1,11 +1,10 @@
 package de.htwg.se.Hearts.controller
 
 import de.htwg.se.Hearts.model.*
+import de.htwg.se.Hearts.util.{UserInterface, ConsoleUserInterface}
 import scala.collection.mutable.ListBuffer
-import scala.io.StdIn.readLine
 
-
-class GameController(game: Game) extends Observable {
+class GameController(game: Game, ui: UserInterface = new ConsoleUserInterface()) extends Observable {
   private var currentPot: ListBuffer[Card] = ListBuffer()
   private var currentPlayerIndex: Int = 0
   private var gameOver: Boolean = false
@@ -57,20 +56,20 @@ class GameController(game: Game) extends Observable {
   }
 
   def getCardIndexFromPlayer(): Int = {
-    print(s"\n${getCurrentPlayerName}, welche Karte möchtest du spielen? (Gib den Index ein): ")
-    val input = readLine().trim
+    ui.displayMessage(s"\n${getCurrentPlayerName}, welche Karte möchtest du spielen? (Gib den Index ein): ")
+    val input = ui.readInput()
 
     try {
       val index = input.toInt
       if (index >= 0 && index < getCurrentPlayerHand.length) {
         return index
       } else {
-        println("Ungültiger Index. Bitte einen gültigen Index eingeben.")
+        ui.displayMessage("Ungültiger Index. Bitte einen gültigen Index eingeben.\n")
         return -1
       }
     } catch {
       case _: NumberFormatException =>
-        println("Bitte eine Zahl eingeben.")
+        ui.displayMessage("Bitte eine Zahl eingeben.\n")
         return -1
     }
   }

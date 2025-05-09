@@ -75,5 +75,6 @@ class ControllerSpec extends AnyWordSpec with Matchers {
       // At this point, both players should have no cards left
       testController.gameIsOver should be(true)
     }
+    
   }
 }
