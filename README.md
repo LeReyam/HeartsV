@@ -1,7 +1,7 @@
 # HeartsV
 
 ![Build](https://github.com/LeReyam/HeartsV/actions/workflows/ci.yml/badge.svg)
-[![Coverage Status](https://coveralls.io/repos/github/LeReyam/HeartsV/badge.svg)](https://coveralls.io/github/LeReyam/HeartsV)
+[![Coverage Status](https://coveralls.io/repos/github/LeReyam/HeartsV/badge.svg?branch=Development)](https://coveralls.io/github/LeReyam/HeartsV?branch=Development)
 
 Ein Scala-Projekt zur Umsetzung des Kartenspiels Hearts im Rahmen einer Vorlesung.
 
