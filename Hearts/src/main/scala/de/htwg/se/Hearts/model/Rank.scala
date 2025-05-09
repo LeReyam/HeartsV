@@ -29,5 +29,6 @@ enum Rank(val value: Int) extends Ordered[Rank]:
     case Queen => "Q"
     case King  => "K"
     case Ace   => "A"
+    
   override def compare(that: Rank): Int =
     this.value.compare(that.value)
