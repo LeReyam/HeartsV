@@ -80,5 +80,35 @@ class GameViewSpec extends AnyWordSpec with Matchers {
 
         outputString should include regex "Leer".r
       }
+
+      "Have consistent line lengths for player hand display" in {
+        val alice = new Player("Alice", List(
+          Card(Rank.Two, Suit.Hearts),
+          Card(Rank.Ace, Suit.Spades),
+          Card(Rank.Jack, Suit.Diamonds),
+          Card(Rank.Ten, Suit.Clubs)
+        ))
+        val bob = new Player("Bob", List(
+          Card(Rank.Ace, Suit.Clubs),
+          Card(Rank.King, Suit.Diamonds),
+          Card(Rank.Queen, Suit.Hearts),
+          Card(Rank.Nine, Suit.Spades)
+        ))
+        val game = new Game(List(alice, bob))
+        val controller = new GameController(game)
+        val gameView = new GameView(controller)
+
+        val outputString = gameView.createGameFrame()
+
+        val lines = outputString.split("\n")
+        val playerHandLines = lines.filter(line =>
+          line.contains("Alice") || line.contains("Bob")
+        )
+
+        val lineLengths = playerHandLines.map(_.length)
+        val firstLineLength = lineLengths.headOption.getOrElse(0)
+
+        lineLengths.forall(_ == firstLineLength) shouldBe true
+      }
     }
 }

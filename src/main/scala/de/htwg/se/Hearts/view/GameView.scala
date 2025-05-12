@@ -25,7 +25,7 @@ class GameView(controller: GameController) extends Observer {
     val headerBuilder = new StringBuilder("\t")
     val currentPlayerHand = controller.getCurrentPlayerHand
     for (i <- 0 until currentPlayerHand.length) {
-      headerBuilder.append(f"|  $i  ")
+      headerBuilder.append(f"| $i%-2d ")
     }
     headerBuilder.append("|\n")
     sb.append(headerBuilder.toString())
@@ -35,9 +35,9 @@ class GameView(controller: GameController) extends Observer {
       val handStr = player.hand.map { card =>
         val cardStr = s"${card.rank.toString}${card.suit.toString}"
         f"$cardStr%-3s"
-      }.mkString(" | ")
+      }.mkString("| ")
       val currentMarker = if (player.name == controller.getCurrentPlayerName) " *" else ""
-      sb.append(s"${player.name}${currentMarker}\t| $handStr |\n")
+      sb.append(s"${player.name}${currentMarker}\t| $handStr|\n")
     }
     sb.append("\n")
 
