@@ -27,7 +27,7 @@ class PlayerSpec extends AnyWordSpec with Matchers {
         Card(Rank.Five, Suit.Hearts)
       ))
 
-      player.playCard(Card(Rank.Five, Suit.Hearts))
+      player.removeCard(Card(Rank.Five, Suit.Hearts))
       player.hand should have length 1
       player.hand should contain only Card(Rank.Ten, Suit.Hearts)
     }
@@ -39,7 +39,7 @@ class PlayerSpec extends AnyWordSpec with Matchers {
       ))
 
       // Playing a card not in hand should not change the hand
-      player.playCard(Card(Rank.Ace, Suit.Spades))
+      player.removeCard(Card(Rank.Ace, Suit.Spades))
       player.hand should have length 2
       player.hand should contain(Card(Rank.Ten, Suit.Hearts))
       player.hand should contain(Card(Rank.Five, Suit.Hearts))
@@ -50,7 +50,7 @@ class PlayerSpec extends AnyWordSpec with Matchers {
       player.hand should be(empty)
 
       // Playing a card with empty hand should not cause errors
-      noException should be thrownBy player.playCard(Card(Rank.Ace, Suit.Spades))
+      noException should be thrownBy player.removeCard(Card(Rank.Ace, Suit.Spades))
     }
   }
 }

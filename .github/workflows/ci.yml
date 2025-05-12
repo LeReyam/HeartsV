@@ -5,9 +5,7 @@ on:
     branches: ['**']  # Alle Branches
   pull_request:
     branches:
-      - master
-      - main
-      - develop
+      - '**'  # Alle Branches
 
 jobs:
   build:
@@ -43,9 +41,3 @@ jobs:
       run: sbt coveralls
       env:
         COVERALLS_REPO_TOKEN: ${{ secrets.COVERALLS_REPO_TOKEN }}
-
-    - name: Upload build artifacts (optional)
-      uses: actions/upload-artifact@v3
-      with:
-        name: coverage-report
-        path: target/scala-*/scoverage-report/

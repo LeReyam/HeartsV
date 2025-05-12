@@ -2,16 +2,13 @@ package de.htwg.se.Hearts.controller
 
 import de.htwg.se.Hearts.model.*
 import scala.collection.mutable.ListBuffer
-import scala.io.StdIn.readLine
+import scala.io.StdIn
 
 class GameController(game: Game) extends Observable {
   private var currentPot: ListBuffer[Card] = ListBuffer()
   private var currentPlayerIndex: Int = 0
   private var gameOver: Boolean = false
 
-
-
-  // Implementierung der Controller-Interface-Methoden
   def getCurrentPlayerName: String = game.players(currentPlayerIndex).name
 
   def getCurrentPlayerHand: List[Card] = game.players(currentPlayerIndex).hand
@@ -27,7 +24,7 @@ class GameController(game: Game) extends Observable {
 
     if (index >= 0 && index < currentPlayer.hand.length) {
       val selectedCard = currentPlayer.hand(index)
-      currentPlayer.playCard(selectedCard)
+      currentPlayer.removeCard(selectedCard)
       currentPot += selectedCard
       currentPlayerIndex = (currentPlayerIndex + 1) % game.players.length
       if (game.players.forall(_.hand.isEmpty)) {
@@ -39,7 +36,7 @@ class GameController(game: Game) extends Observable {
     }
   }
 
-  // Methode zum Starten und Durchführen des Spiels
+
   def runGame(): Unit = {
     var playing = true
 
@@ -56,22 +53,32 @@ class GameController(game: Game) extends Observable {
     notifyObservers()
   }
 
-  def getCardIndexFromPlayer(): Int = {
-    print(s"\n${getCurrentPlayerName}, welche Karte möchtest du spielen? (Gib den Index ein): ")
-    val input = readLine().trim
+  protected def getCardIndexFromPlayer(): Int = {
+    val input = StdIn.readLine()
+    parseCardIndex(input)
+  }
 
+
+
+  def parseCardIndex(input: String): Int = {
+    val handSize = getCurrentPlayerHand.length
     try {
       val index = input.toInt
-      if (index >= 0 && index < getCurrentPlayerHand.length) {
-        return index
+      if (index >= 0 && index < handSize) {
+        index
       } else {
-        println("Ungültiger Index. Bitte einen gültigen Index eingeben.")
-        return -1
+        println("Ungültiger Index. Bitte einen gültigen Index eingeben.\n")
+        -1
       }
     } catch {
       case _: NumberFormatException =>
-        println("Bitte eine Zahl eingeben.")
-        return -1
+        println("Bitte eine Zahl eingeben.\n")
+        -1
     }
   }
+
+
+
+
+
 }
