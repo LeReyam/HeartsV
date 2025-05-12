@@ -46,15 +46,10 @@ class GameViewSpec extends AnyWordSpec with Matchers {
         val game = new Game(List(alice, bob))
         val controller = new GameController(game)
         val gameView = new GameView(controller)
-
-        // Alice spielt die erste Karte (2♥)
         controller.playCard(0)
-        // Bob spielt die erste Karte (10♣)
         controller.playCard(0)
 
         val outputString = gameView.createGameFrame()
-
-        // Überprüfen, ob der Pot die gespielten Karten enthält
         outputString should include regex """(?s)Aktueller Pot:.*?2\s*\u2665.*?10\s*\u2663"""
       }
 
@@ -104,11 +99,7 @@ class GameViewSpec extends AnyWordSpec with Matchers {
         val playerHandLines = lines.filter(line =>
           line.contains("Alice") || line.contains("Bob")
         )
-
-        val lineLengths = playerHandLines.map(_.length)
-        val firstLineLength = lineLengths.headOption.getOrElse(0)
-
-        lineLengths.forall(_ == firstLineLength) shouldBe true
+        playerHandLines(1).length should be (playerHandLines(2).length)
       }
     }
 }

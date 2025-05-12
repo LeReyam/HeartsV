@@ -31,13 +31,17 @@ class GameView(controller: GameController) extends Observer {
     sb.append(headerBuilder.toString())
 
 
+    // Find the longest player name to determine fixed width
+    val maxNameLength = controller.getAllPlayers.map(_.name.length).max + 3 // +3 for the marker " *"
+
     controller.getAllPlayers.foreach { player =>
       val handStr = player.hand.map { card =>
         val cardStr = s"${card.rank.toString}${card.suit.toString}"
         f"$cardStr%-3s"
       }.mkString("| ")
-      val currentMarker = if (player.name == controller.getCurrentPlayerName) " *" else ""
-      sb.append(s"${player.name}${currentMarker}\t| $handStr|\n")
+      val currentMarker = if (player.name == controller.getCurrentPlayerName) " *" else "    "
+      val nameWithMarker = s"${player.name}${currentMarker}"
+      sb.append(s"${nameWithMarker.padTo(maxNameLength, ' ')}| $handStr|\n")
     }
     sb.append("\n")
 
