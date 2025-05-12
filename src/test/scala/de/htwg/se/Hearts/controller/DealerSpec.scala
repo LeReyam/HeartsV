@@ -26,33 +26,21 @@ class DealerSpec extends AnyWordSpec with Matchers {
     "Mix all the cards" in {
       val deck = List(Card(Rank.Ace, Suit.Clubs), Card(Rank.Eight, Suit.Spades))
       val shuffledDeck = Dealer.shuffle(deck)
-
-      // Since shuffle uses Random, we can only verify the shuffled deck contains the same cards
       shuffledDeck should contain theSameElementsAs deck
-
-      // Note: The original test was deterministic but shuffle is random,
-      // so we can't guarantee a specific outcome
     }
   }
 
-  "A deal" should {
-    "split all cards between players" in {
+  "A deal with player names" should {
+    "create a game with cards for players" in {
       val deck = Dealer.createDeck()
       val playerNames = List("Alice", "Bob", "Charlie", "Diana")
-      val players = Dealer.deal(deck, playerNames)
 
-      // Verify we have the correct number of players
-      players should have length playerNames.length
-
-      // Verify player names are correct
-      players.map(_.name) should contain theSameElementsAs playerNames
-
-      // Verify each player has the correct number of cards
+      val game = Dealer.deal(deck, playerNames)
+      game.players should have length playerNames.length
+      game.players.map(_.name) should contain theSameElementsAs playerNames
       val expectedCardsPerPlayer = deck.length / playerNames.length
-      players.foreach(player => player.hand.length should be(expectedCardsPerPlayer))
-
-      // Verify all cards from the deck are distributed
-      val allCards = players.flatMap(_.hand)
+      game.players.foreach(player => player.hand.length should be(expectedCardsPerPlayer))
+      val allCards = game.players.flatMap(_.hand)
       allCards should contain theSameElementsAs deck
     }
   }

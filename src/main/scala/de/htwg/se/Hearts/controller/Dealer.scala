@@ -12,9 +12,10 @@ object Dealer:
     util.Random.shuffle(deck)
 
 
-  def deal(deck: List[Card],playerNames: List[String]): List[Player] =
+  def deal(deck: List[Card],playerNames: List[String]): Game =
     val leftovers = deck.length /playerNames.length
     var reducedDeck = deck.filterNot(_ == deck.take(leftovers))
 
     val hands = deck.grouped(deck.length/playerNames.length).toList
-    playerNames.zip(hands).map { case (name, hand) => Player(name, hand) }
+    val players = playerNames.zip(hands).map { case (name, hand) => Player(name, hand) }
+    Game(players)
