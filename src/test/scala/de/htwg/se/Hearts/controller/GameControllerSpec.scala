@@ -40,6 +40,7 @@ class GameControllerSpec extends AnyWordSpec with Matchers {
 
     "handle invalid card index" in {
 
+      
     }
 
     "handle non-numeric input" in {
@@ -47,7 +48,7 @@ class GameControllerSpec extends AnyWordSpec with Matchers {
     }
 
     "run a complete game" in {
-      
+
     }
   }
 }
