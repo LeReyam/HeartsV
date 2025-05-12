@@ -13,7 +13,7 @@ class GameView(controller: GameController) extends Observer {
   def createGameFrame(): String = {
     val sb = new StringBuilder
 
-    
+
     val separator = "=" * 80
     sb.append(separator).append("\n")
 
@@ -43,13 +43,14 @@ class GameView(controller: GameController) extends Observer {
 
 
     sb.append("Aktueller Pot:\n")
-    val potStr = if (controller.getCurrentPot.isEmpty) "Leer" else controller.getCurrentPot.map { card =>
+    val potStr = if (controller.getCurrentPot.isEmpty)
+      "Leer"
+    else controller.getCurrentPot.map { card =>
       val cardStr = s"${card.rank.toString}${card.suit.toString}"
       f"$cardStr%-3s"
     }.mkString(" | ")
     sb.append(s"| $potStr |\n")
-    sb.append(separator).append("\n")
-
+    sb.append(separator).append(s"\n${controller.getCurrentPlayerName}, welche Karte möchtest du spielen? (Gib den Index ein): \n")
     sb.toString
   }
 }

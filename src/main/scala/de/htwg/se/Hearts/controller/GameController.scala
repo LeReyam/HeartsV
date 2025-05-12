@@ -54,7 +54,6 @@ class GameController(game: Game) extends Observable {
   }
 
   protected def getCardIndexFromPlayer(): Int = {
-    println(s"\n${getCurrentPlayerName}, welche Karte möchtest du spielen? (Gib den Index ein): ")
     val input = StdIn.readLine()
     parseCardIndex(input)
   }

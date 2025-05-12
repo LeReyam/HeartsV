@@ -119,7 +119,7 @@ class GameControllerSpec extends AnyWordSpec with Matchers {
       val testController = new GameController(game) {
         override protected def getCardIndexFromPlayer(): Int = {
           if (inputs.hasNext) inputs.next()
-          else -1
+          else 0
         }
       }
 
@@ -132,7 +132,7 @@ class GameControllerSpec extends AnyWordSpec with Matchers {
 
       testController.gameIsOver should be(true)
       testController.getCurrentPot.size should be(2)
-      updates should be >= 1
+      updates should be == 2
     }
   }
 }
