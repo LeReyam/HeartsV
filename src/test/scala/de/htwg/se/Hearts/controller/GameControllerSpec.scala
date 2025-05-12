@@ -44,15 +44,12 @@ class GameControllerSpec extends AnyWordSpec with Matchers {
 
     "allow a player to play a card" in {
       controller.playCard(0) should be(true)
-      controller.getCurrentPlayerName should be("Spieler 2") // Nächster Spieler
+      controller.getCurrentPlayerName should be("Spieler 2")
       controller.getCurrentPot.size should be(1)
     }
 
     "reject invalid card indices" in {
-      // Negative index
       controller.playCard(-1) should be(false)
-
-      // Index out of bounds
       controller.playCard(10) should be(false)
     }
 
@@ -73,7 +70,6 @@ class GameControllerSpec extends AnyWordSpec with Matchers {
     }
 
     "correctly detect game over when all players have no cards" in {
-      // Neues Spiel mit Spielern, die nur eine Karte haben
       val p1 = new Player("P1", List(Card(Rank.Ace, Suit.Hearts)))
       val p2 = new Player("P2", List(Card(Rank.King, Suit.Hearts)))
       val newGame = new Game(List(p1, p2))
@@ -81,17 +77,14 @@ class GameControllerSpec extends AnyWordSpec with Matchers {
 
       newController.gameIsOver should be(false)
 
-      // Erste Karte spielen
       newController.playCard(0) should be(true)
       newController.gameIsOver should be(false)
 
-      // Zweite Karte spielen, danach sollten alle Spieler keine Karten mehr haben
       newController.playCard(0) should be(true)
       newController.gameIsOver should be(true)
     }
 
     "notify observers when game state changes" in {
-      // Erstellen eines Test-Observers
       var notified = false
       val observer = new Observer {
         override def update(): Unit = {
@@ -104,20 +97,19 @@ class GameControllerSpec extends AnyWordSpec with Matchers {
       val testGame = new Game(List(p1, p2))
       val testController = new GameController(testGame)
 
-      // Observer registrieren
       testController.addObserver(observer)
 
-      // Methode aufrufen, die notifyObservers() verwendet
-      //testController.runGame()
-
-      // Überprüfen, ob der Observer benachrichtigt wurde
+      testController.notifyObservers()
       notified should be(true)
+
+      testController.getCurrentPlayerName should be("P1")
       testController.playCard(0) should be(true)
+      testController.getCurrentPlayerName should be("P2")
       testController.playCard(0) should be(true)
+      testController.gameIsOver should be(true)
     }
 
-    "run a complete game" in {
-
+    "run a complete game with predefined inputs" in {
     }
 
 

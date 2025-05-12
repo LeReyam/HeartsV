@@ -9,7 +9,6 @@ class GameController(game: Game) extends Observable {
   private var currentPlayerIndex: Int = 0
   private var gameOver: Boolean = false
 
-  // Implementierung der Controller-Interface-Methoden
   def getCurrentPlayerName: String = game.players(currentPlayerIndex).name
 
   def getCurrentPlayerHand: List[Card] = game.players(currentPlayerIndex).hand
@@ -38,7 +37,6 @@ class GameController(game: Game) extends Observable {
   }
 
 
-  // Methode zum Starten und Durchführen des Spiels
   def runGame(): Unit = {
     var playing = true
 

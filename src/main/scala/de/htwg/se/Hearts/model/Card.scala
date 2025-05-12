@@ -4,8 +4,6 @@ import scala.math.Ordered
 
 case class Card(rank: Rank, suit: Suit) extends Ordered[Card] {
   override def toString: String = s"${rank.toString}${suit.toString}"
-
-  // Compare cards based on their rank only
   override def compare(that: Card): Int = this.rank.compare(that.rank)
 }
 
