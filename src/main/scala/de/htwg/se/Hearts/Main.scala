@@ -18,3 +18,5 @@ import de.htwg.se.Hearts.controller._
   val controller = new GameController(game)
   val gameView = new GameView(controller)
   controller.runGame()
+  controller.playCard(0)
+  controller.playCard(0)

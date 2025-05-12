@@ -34,7 +34,7 @@ class GameControllerSpec extends AnyWordSpec with Matchers {
     }
 
     "return the current pot" in {
-      controller.getCurrentPot shouldBe a[ListBuffer[_]]
+      controller.getCurrentPot shouldBe a[ListBuffer[?]]
       controller.getCurrentPot.size should be(0)
     }
 
@@ -108,16 +108,18 @@ class GameControllerSpec extends AnyWordSpec with Matchers {
       testController.addObserver(observer)
 
       // Methode aufrufen, die notifyObservers() verwendet
-      testController.playCard(0)
+      //testController.runGame()
 
       // Überprüfen, ob der Observer benachrichtigt wurde
       notified should be(true)
+      testController.playCard(0) should be(true)
+      testController.playCard(0) should be(true)
     }
 
     "run a complete game" in {
 
     }
 
-    
+
   }
 }
