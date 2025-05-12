@@ -49,9 +49,6 @@ class GameView(controller: GameController) extends Observer {
     }.mkString(" | ")
     sb.append(s"| $potStr |\n")
     sb.append(separator).append("\n")
-    if (controller.gameIsOver) {
-      sb.append("Spiel beendet!\n")
-    }
 
     sb.toString
   }
