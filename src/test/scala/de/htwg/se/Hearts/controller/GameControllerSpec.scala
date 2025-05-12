@@ -114,7 +114,7 @@ class GameControllerSpec extends AnyWordSpec with Matchers {
       val p2 = new Player("P2", List(Card(Rank.King, Suit.Hearts)))
       val game = new Game(List(p1, p2))
 
-      val inputs = List(0, 0).iterator 
+      val inputs = List(0, -1, 0).iterator
 
       val testController = new GameController(game) {
         override protected def getCardIndexFromPlayer(): Int = {
