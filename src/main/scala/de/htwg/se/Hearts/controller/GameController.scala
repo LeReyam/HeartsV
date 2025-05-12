@@ -25,7 +25,7 @@ class GameController(game: Game) extends Observable {
 
     if (index >= 0 && index < currentPlayer.hand.length) {
       val selectedCard = currentPlayer.hand(index)
-      currentPlayer.playCard(selectedCard)
+      currentPlayer.removeCard(selectedCard)
       currentPot += selectedCard
       currentPlayerIndex = (currentPlayerIndex + 1) % game.players.length
       if (game.players.forall(_.hand.isEmpty)) {
@@ -58,19 +58,30 @@ class GameController(game: Game) extends Observable {
   def getCardIndexFromPlayer(): Int = {
     println(s"\n${getCurrentPlayerName}, welche Karte möchtest du spielen? (Gib den Index ein): ")
     val input = StdIn.readLine()
+    parseCardIndex(input)
+  }
 
+
+
+  def parseCardIndex(input: String): Int = {
+    val handSize = getCurrentPlayerHand.length
     try {
       val index = input.toInt
-      if (index >= 0 && index < getCurrentPlayerHand.length) {
-        return index
+      if (index >= 0 && index < handSize) {
+        index
       } else {
         println("Ungültiger Index. Bitte einen gültigen Index eingeben.\n")
-        return -1
+        -1
       }
     } catch {
       case _: NumberFormatException =>
         println("Bitte eine Zahl eingeben.\n")
-        return -1
+        -1
     }
   }
+
+
+
+
+
 }

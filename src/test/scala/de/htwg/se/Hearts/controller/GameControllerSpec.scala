@@ -34,17 +34,16 @@ class GameControllerSpec extends AnyWordSpec with Matchers {
       controller.getCurrentPot.size should be(1)
     }
 
-    "get card index from player" in {
-
+    "test if index of card is valid" in {
+      controller.parseCardIndex("0") should be (0)
     }
 
     "handle invalid card index" in {
-
-      
+      controller.parseCardIndex("3") should be (-1)
     }
 
     "handle non-numeric input" in {
-
+      controller.parseCardIndex("a") should be (-1)
     }
 
     "run a complete game" in {
