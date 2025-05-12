@@ -23,8 +23,8 @@ class GameView(controller: GameController) extends Observer {
 
     // Dynamische Generierung der Spaltenüberschriften basierend auf der Länge der Hand des aktuellen Spielers
     val headerBuilder = new StringBuilder("\t")
-    val currentPlayer = controller.getAllPlayers.find(_.name == controller.getCurrentPlayerName).getOrElse(controller.getAllPlayers.head)
-    for (i <- 0 until currentPlayer.hand.length) {
+    val currentPlayerHand = controller.getCurrentPlayerHand
+    for (i <- 0 until currentPlayerHand.length) {
       headerBuilder.append(f"|  $i  ")
     }
     headerBuilder.append("|\n")
