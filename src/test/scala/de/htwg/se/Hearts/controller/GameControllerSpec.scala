@@ -110,8 +110,29 @@ class GameControllerSpec extends AnyWordSpec with Matchers {
     }
 
     "run a complete game with predefined inputs" in {
+      val p1 = new Player("P1", List(Card(Rank.Ace, Suit.Hearts)))
+      val p2 = new Player("P2", List(Card(Rank.King, Suit.Hearts)))
+      val game = new Game(List(p1, p2))
+
+      val inputs = List(0, 0).iterator 
+
+      val testController = new GameController(game) {
+        override protected def getCardIndexFromPlayer(): Int = {
+          if (inputs.hasNext) inputs.next()
+          else -1
+        }
+      }
+
+      var updates = 0
+      testController.addObserver(new Observer {
+        override def update(): Unit = updates += 1
+      })
+
+      testController.runGame()
+
+      testController.gameIsOver should be(true)
+      testController.getCurrentPot.size should be(2)
+      updates should be >= 1
     }
-
-
   }
 }
