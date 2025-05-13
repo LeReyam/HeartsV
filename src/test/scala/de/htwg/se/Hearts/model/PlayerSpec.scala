@@ -52,5 +52,10 @@ class PlayerSpec extends AnyWordSpec with Matchers {
       // Playing a card with empty hand should not cause errors
       noException should be thrownBy player.removeCard(Card(Rank.Ace, Suit.Spades))
     }
+
+    "have a score associated" in {
+      val player = new Player("Alice", List())
+      player.points should be (0)
+    }
   }
 }

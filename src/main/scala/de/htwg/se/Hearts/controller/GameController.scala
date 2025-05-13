@@ -9,6 +9,8 @@ class GameController(game: Game) extends Observable {
   private var currentPlayerIndex: Int = 0
   private var gameOver: Boolean = false
 
+  def getPlayerCount: Int = game.players.length
+
   def getCurrentPlayerName: String = game.players(currentPlayerIndex).name
 
   def getCurrentPlayerHand: List[Card] = game.players(currentPlayerIndex).hand
@@ -18,6 +20,13 @@ class GameController(game: Game) extends Observable {
   def getCurrentPot: ListBuffer[Card] = currentPot
 
   def gameIsOver: Boolean = gameOver
+
+  def getPlayerPoints(playerName: String): Int = {
+    game.players.find(_.name == playerName) match {
+    case Some(player) => player.points
+    case None => -1 // Return -1 if player not found
+    }
+  }
 
   def playCard(index: Int): Boolean = {
     val currentPlayer = game.players(currentPlayerIndex)
@@ -46,6 +55,7 @@ class GameController(game: Game) extends Observable {
       if (cardIndex >= 0) {
         playCard(cardIndex)
       }
+      score()
       if (gameIsOver) {
         playing = false
       }
@@ -75,6 +85,31 @@ class GameController(game: Game) extends Observable {
     }
   }
 
+  def score() :Boolean =
+    if (getPlayerCount == getCurrentPot.length) {
+      val firstCard = currentPot.head
+      val firstSuit = firstCard.suit
+      val highestCard = currentPot
+        .filter(_.suit == firstSuit)
+        .maxBy(card => card.rank)
+      val winnerIndex = currentPot.indexOf(highestCard)
+      var trickPoints = 0
+      for (card <- currentPot) {
+        if (card.suit == Suit.Hearts) {
+          trickPoints += 1
+        }
+        else if (card.suit == Suit.Spades && card.rank == Rank.Queen) {
+          trickPoints += 13
+        }
+      }
+      val winner = game.players(winnerIndex)
+      winner.points += trickPoints
+      currentPot.clear()
+      currentPlayerIndex = winnerIndex
+      true
+    }else{
+      false
+    }
 
 
 

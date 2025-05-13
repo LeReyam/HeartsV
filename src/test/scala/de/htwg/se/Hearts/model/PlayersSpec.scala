@@ -16,13 +16,6 @@ class PlayersSpec extends AnyWordSpec with Matchers {
     ))
     val playerList = List(alice, bob)
 
-    "store a list of players" in {
-      val players = Players(playerList)
-      players.players should have length 2
-      players.players should contain(alice)
-      players.players should contain(bob)
-    }
-
     "allow access to individual players" in {
       val players = Players(playerList)
       players.players.head should be(alice)

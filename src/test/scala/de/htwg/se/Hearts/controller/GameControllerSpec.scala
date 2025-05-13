@@ -23,6 +23,10 @@ class GameControllerSpec extends AnyWordSpec with Matchers {
       controller.getCurrentPlayerName should be("Spieler 1")
     }
 
+    "return the number of players" in {
+      controller.getPlayerCount should be (2)
+    }
+
     "return the current player's hand" in {
       controller.getCurrentPlayerHand should contain(Card(Rank.Ace, Suit.Hearts))
       controller.getCurrentPlayerHand should contain(Card(Rank.King, Suit.Hearts))
@@ -131,8 +135,22 @@ class GameControllerSpec extends AnyWordSpec with Matchers {
       testController.runGame()
 
       testController.gameIsOver should be(true)
-      testController.getCurrentPot.size should be(2)
       updates should be (4)
     }
+
+    "update scores for players based on the trick" in {
+      val p1 = new Player("P1", List(Card(Rank.Ace, Suit.Hearts),Card (Rank.Two, Suit.Clubs)))
+      val p2 = new Player("P2", List(Card(Rank.King, Suit.Hearts),Card(Rank.Queen,Suit.Spades)))
+      val game = new Game(List(p1, p2))
+      val testController = new GameController(game)
+      testController.playCard(0) should be(true)
+      testController.score() should be (false)
+      testController.playCard(0) should be(true)
+      testController.score() should be (true)
+      testController.getCurrentPot shouldBe empty
+      testController.getPlayerPoints("P1") should be (2)
+      testController.getPlayerPoints("P2") should be (0)
+      }
+
   }
 }
