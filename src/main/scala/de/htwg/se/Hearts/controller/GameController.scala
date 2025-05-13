@@ -21,13 +21,7 @@ class GameController(game: Game) extends Observable {
 
   def gameIsOver: Boolean = gameOver
 
-  def getPlayerPoints(playerIndex: Int): Int = {
-    if (playerIndex >= 0 && playerIndex <= getPlayerCount){
-      game.players(playerIndex).points
-    } else {
-      -1
-    }
-  }
+  def getPlayerPoints(playerIndex: Int): Int = game.players(playerIndex).points
 
   def playCard(index: Int): Boolean = {
     val currentPlayer = game.players(currentPlayerIndex)
