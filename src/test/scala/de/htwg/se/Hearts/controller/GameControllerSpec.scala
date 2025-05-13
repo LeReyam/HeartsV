@@ -148,8 +148,16 @@ class GameControllerSpec extends AnyWordSpec with Matchers {
       testController.playCard(0) should be(true)
       testController.score() should be (true)
       testController.getCurrentPot shouldBe empty
-      testController.getPlayerPoints("P1") should be (2)
-      testController.getPlayerPoints("P2") should be (0)
+      testController.getPlayerPoints(0) should be (2)
+      testController.getPlayerPoints(1) should be (0)
+
+      testController.playCard(0) should be(true)
+      testController.score() should be (false)
+      testController.playCard(0) should be(true)
+      testController.score() should be (true)
+      testController.getCurrentPot shouldBe empty
+      testController.getPlayerPoints(0) should be (15)
+      testController.getPlayerPoints(1) should be (0)
       }
 
   }

@@ -21,10 +21,11 @@ class GameController(game: Game) extends Observable {
 
   def gameIsOver: Boolean = gameOver
 
-  def getPlayerPoints(playerName: String): Int = {
-    game.players.find(_.name == playerName) match {
-    case Some(player) => player.points
-    case None => -1 // Return -1 if player not found
+  def getPlayerPoints(playerIndex: Int): Int = {
+    if (playerIndex >= 0 && playerIndex <= getPlayerCount){
+      game.players(playerIndex).points
+    } else {
+      -1
     }
   }
 
@@ -110,8 +111,4 @@ class GameController(game: Game) extends Observable {
     }else{
       false
     }
-
-
-
-
 }
