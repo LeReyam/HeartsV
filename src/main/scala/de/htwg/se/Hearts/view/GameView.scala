@@ -14,20 +14,21 @@ class GameView(controller: GameController) extends Observer {
     val sb = new StringBuilder
 
 
-    val separator = "=" * 80
+    val separator = "=" * 150
     sb.append(separator).append("\n")
-
-
     sb.append(s"Aktueller Spieler: ${controller.getCurrentPlayerName}\n")
     sb.append(separator).append("\n\n")
 
 
     val headerBuilder = new StringBuilder("\t")
+    headerBuilder.append("|Pts:")
     val currentPlayerHand = controller.getCurrentPlayerHand
     for (i <- 0 until currentPlayerHand.length) {
       headerBuilder.append(f"| $i%-2d ")
     }
     headerBuilder.append("|\n")
+
+
     sb.append(headerBuilder.toString())
 
 
@@ -41,7 +42,8 @@ class GameView(controller: GameController) extends Observer {
       }.mkString("| ")
       val currentMarker = if (player.name == controller.getCurrentPlayerName) " *" else "   "
       val nameWithMarker = s"${player.name}${currentMarker}"
-      sb.append(s"${nameWithMarker.padTo(maxNameLength, ' ')}| $handStr|\n")
+      val points = f"| ${player.points}%-2d |"
+      sb.append(s"${nameWithMarker.padTo(maxNameLength, ' ')}$points $handStr|\n")
     }
     sb.append("\n")
 
