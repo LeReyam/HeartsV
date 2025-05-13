@@ -67,12 +67,10 @@ class GameController(game: Game) extends Observable {
       if (index >= 0 && index < handSize) {
         index
       } else {
-        println("Ungültiger Index. Bitte einen gültigen Index eingeben.\n")
         -1
       }
     } catch {
       case _: NumberFormatException =>
-        println("Bitte eine Zahl eingeben.\n")
         -1
     }
   }

@@ -39,7 +39,7 @@ class GameView(controller: GameController) extends Observer {
         val cardStr = s"${card.rank.toString}${card.suit.toString}"
         f"$cardStr%-3s"
       }.mkString("| ")
-      val currentMarker = if (player.name == controller.getCurrentPlayerName) " *" else "    "
+      val currentMarker = if (player.name == controller.getCurrentPlayerName) " *" else "   "
       val nameWithMarker = s"${player.name}${currentMarker}"
       sb.append(s"${nameWithMarker.padTo(maxNameLength, ' ')}| $handStr|\n")
     }
