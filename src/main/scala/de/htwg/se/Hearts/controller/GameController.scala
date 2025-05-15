@@ -50,6 +50,7 @@ class GameController(game: Game) extends Observable {
       if (cardIndex >= 0) {
         playCard(cardIndex)
       }
+      notifyObservers()
       score()
       if (gameIsOver) {
         playing = false
