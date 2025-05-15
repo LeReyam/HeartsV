@@ -23,5 +23,11 @@ class SuitSpec extends AnyWordSpec with Matchers {
       Suit.Clubs.toString should be("♣")
       Suit.Spades.toString should be("♠")
     }
+
+    "compare based on ordinal order" in {
+      Suit.Hearts.compare(Suit.Spades) should be < 0
+      Suit.Spades.compare(Suit.Hearts) should be > 0
+      Suit.Diamonds.compare(Suit.Diamonds) shouldBe 0
+    }
   }
 }

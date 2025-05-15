@@ -135,7 +135,7 @@ class GameControllerSpec extends AnyWordSpec with Matchers {
       testController.runGame()
 
       testController.gameIsOver should be(true)
-      updates should be (4)
+      updates should be (7)
     }
 
     "update scores for players based on the trick" in {
