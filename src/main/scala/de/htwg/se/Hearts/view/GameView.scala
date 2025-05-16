@@ -48,9 +48,10 @@ class GameView(controller: GameController) extends Observer {
     sb.append(s"Current Player: ${controller.getCurrentPlayerName}\n")
     sb.append(separator).append("\n\n")
 
+    val currentPlayerHand = controller.getSortedHand
+
     val headerBuilder = new StringBuilder("\t")
     headerBuilder.append("|Pts:")
-    val currentPlayerHand = controller.getSortedHand
     for (i <- 0 until currentPlayerHand.length) {
       headerBuilder.append(f"| $i%-2d ")
     }
@@ -61,11 +62,19 @@ class GameView(controller: GameController) extends Observer {
     // Find the longest player name to determine fixed width
     val maxNameLength = controller.getAllPlayers.map(_.name.length).max + 3 // +3 for the marker " *"
 
-    controller.getAllPlayers.foreach { player =>
-      val handStr = player.hand.map { card =>
+    // Get all players and their indices
+    val playersWithIndices = controller.getAllPlayers.zipWithIndex
+
+    playersWithIndices.foreach { case (player, index) =>
+      // Get sorted hand for each player using the new method
+      val sortedHand = controller.getSortedHandForPlayer(index)
+
+      // Format the sorted hand for display
+      val handStr = sortedHand.map { card =>
         val cardStr = s"${card.rank.toString}${card.suit.toString}"
         f"$cardStr%-3s"
       }.mkString("| ")
+
       val currentMarker = if (player.name == controller.getCurrentPlayerName) " *" else "   "
       val nameWithMarker = s"${player.name}${currentMarker}"
       val points = f"| ${player.points}%-2d |"

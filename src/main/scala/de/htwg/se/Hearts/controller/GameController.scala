@@ -21,6 +21,14 @@ class GameController extends Observable {
     sortStrategy.sort(getCurrentPlayerHand)
   }
 
+  def getSortedHandForPlayer(playerIndex: Int): List[Card] = {
+    if (game != null && playerIndex >= 0 && playerIndex < game.players.length) {
+      sortStrategy.sort(game.players(playerIndex).hand)
+    } else {
+      List()
+    }
+  }
+
   def initializeGame(newGame: Game): Unit = {
     game = newGame
     currentPot = ListBuffer()

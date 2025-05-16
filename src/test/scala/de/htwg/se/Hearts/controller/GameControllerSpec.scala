@@ -116,15 +116,6 @@ class GameControllerSpec extends AnyWordSpec with Matchers {
       testController.gameIsOver should be(true)
     }
 
-    "GamplayState should output trick correctly" in {
-      val p1 = new Player("P1", List())
-      val p2 = new Player("P2", List())
-      val xyz = new Game(List(p1, p2))
-      val testController = new GameController()
-      testController.initializeGame(xyz)
-      //TEST INCOMPLETE
-    }
-
 
     "correctly change States" in {
       val controller = new GameController()
@@ -133,6 +124,8 @@ class GameControllerSpec extends AnyWordSpec with Matchers {
       controller.getCurrentState() should include("GetPlayerNamesState")
       controller.handleInput("Player1")
       controller.handleInput("Player2")
+      controller.getCurrentState() should be ("GetSortStrtegyState")
+      controller.handleInput("1")
       controller.getCurrentState() should include("GamePlayState")
       controller.getPlayerCount should be(2)
       for(i <- 0 to 52){
@@ -159,7 +152,7 @@ class GameControllerSpec extends AnyWordSpec with Matchers {
       val p1 = new Player("P1", List(Card(Rank.Ace, Suit.Hearts)))
       val p2 = new Player("P2", List(Card(Rank.King, Suit.Hearts)))
       val game = new Game(List(p1, p2))
-      val inputs = List("a","6","2", "P1", "P2", "-1", "0")
+      val inputs = List("a","6","2", "P1", "P2","1", "-1", "0")
       var inputIndex = 0
       val testController = new GameController() {
         override protected def GetUserInput(): String = {
@@ -185,7 +178,7 @@ class GameControllerSpec extends AnyWordSpec with Matchers {
 
       // After playing all cards, the game should be over
       testController.gameIsOver should be(true)
-      updates should be (59)
+      updates should be (60)
     }
 
     "update scores for players based on the trick" in {
