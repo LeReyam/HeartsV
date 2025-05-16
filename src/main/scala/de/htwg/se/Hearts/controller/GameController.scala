@@ -130,14 +130,10 @@ class GameController extends Observable {
         .filter(_.suit == firstSuit)
         .maxBy(card => card.rank)
 
-      // Calculate the winner index based on the order of play
-      // The first player who played in this trick is (currentPlayerIndex - potSize) % playerCount
-      // (adjusted to ensure positive modulo)
       val potSize = currentPot.length
       val playerCount = game.players.length
       val firstPlayerIndex = currentPlayerIndex
 
-      // Find which player played the highest card
       val highCardPosition = currentPot.indexOf(highestCard)
       val winnerIndex = (firstPlayerIndex + highCardPosition) % playerCount
 
