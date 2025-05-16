@@ -54,7 +54,11 @@ class GameController extends Observable {
     val currentPlayer = game.players(currentPlayerIndex)
 
     if (index >= 0 && index < currentPlayer.hand.length) {
-      val selectedCard = currentPlayer.hand(index)
+      // Get the sorted hand and use the index on it to find the correct card
+      val sortedHand = sortStrategy.sort(currentPlayer.hand)
+      val selectedCard = sortedHand(index)
+
+      // Remove the selected card from the player's hand
       currentPlayer.removeCard(selectedCard)
       currentPot += selectedCard
       currentPlayerIndex = (currentPlayerIndex + 1) % game.players.length
@@ -103,7 +107,8 @@ class GameController extends Observable {
   }
 
   def parseCardIndex(input: String): Int = {
-    val handSize = getCurrentPlayerHand.length
+    val sortedHand = getSortedHand
+    val handSize = sortedHand.length
     try {
       val index = input.toInt
       if (index >= 0 && index < handSize) {
@@ -124,7 +129,18 @@ class GameController extends Observable {
       val highestCard = currentPot
         .filter(_.suit == firstSuit)
         .maxBy(card => card.rank)
-      val winnerIndex = currentPot.indexOf(highestCard)
+
+      // Calculate the winner index based on the order of play
+      // The first player who played in this trick is (currentPlayerIndex - potSize) % playerCount
+      // (adjusted to ensure positive modulo)
+      val potSize = currentPot.length
+      val playerCount = game.players.length
+      val firstPlayerIndex = currentPlayerIndex
+
+      // Find which player played the highest card
+      val highCardPosition = currentPot.indexOf(highestCard)
+      val winnerIndex = (firstPlayerIndex + highCardPosition) % playerCount
+
       var trickPoints = 0
       for (card <- currentPot) {
         if (card.suit == Suit.Hearts) {
