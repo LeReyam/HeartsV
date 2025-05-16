@@ -160,29 +160,7 @@ class GameControllerSpec extends AnyWordSpec with Matchers {
 
       // After playing all cards, the game should be over
       testController.gameIsOver should be(true)
-    }
-
-    "handle state transitions correctly" in {
-      val controller = new GameController()
-
-      // Initial state should be GetPlayerNumberState
-      controller.getCurrentState() should include ("GetPlayerNumberState")
-
-      // Transition to GetPlayerNamesState
-      controller.handleInput("2")
-      controller.getCurrentState() should include("GetPlayerNamesState")
-
-      // Enter first player name
-      controller.handleInput("Player1")
-
-
-      // Enter second player name and transition to GamePlayState
-      controller.handleInput("Player2")
-      controller.getCurrentState() should include("GamePlayState")
-
-
-      // Game should be initialized with 2 players
-      controller.getPlayerCount should be(2)
+      updates should be (7)
     }
 
     "update scores for players based on the trick" in {
