@@ -145,10 +145,49 @@ class GameControllerSpec extends AnyWordSpec with Matchers {
       controller.getPlayerPoints(0) should be (0)
     }
 
+    "run a complete game with predefined inputs and sorting strat 2" in {
+      val controller = new GameController()
+      controller.getCurrentState() should include ("GetPlayerNumberState")
+      controller.handleInput("2")
+      controller.getCurrentState() should include("GetPlayerNamesState")
+      controller.handleInput("Player1")
+      controller.handleInput("Player2")
+      controller.getCurrentState() should be ("GetSortStrategyState")
+      controller.handleInput("2")
+      controller.getCurrentState() should include("GamePlayState")
+      controller.getPlayerCount should be(2)
+      for(i <- 0 to 52){
+        controller.handleInput("0")
+      }
+      controller.getCurrentState() should be ("GameOverState")
+      controller.handleInput("y")
+      controller.getCurrentState() should be ("GetPlayerNumberState")
+    }
+
+
+    "run a complete game with predefined inputs and sorting strat 3" in {
+      val controller = new GameController()
+      controller.getCurrentState() should include ("GetPlayerNumberState")
+      controller.handleInput("2")
+      controller.getCurrentState() should include("GetPlayerNamesState")
+      controller.handleInput("Player1")
+      controller.handleInput("Player2")
+      controller.getCurrentState() should be ("GetSortStrategyState")
+      controller.handleInput("3")
+      controller.getCurrentState() should include("GamePlayState")
+      controller.getPlayerCount should be(2)
+      for(i <- 0 to 52){
+        controller.handleInput("0")
+      }
+      controller.getCurrentState() should be ("GameOverState")
+      controller.handleInput("y")
+      controller.getCurrentState() should be ("GetPlayerNumberState")
+
+    }
 
 
 
-    "run a complete game with predefined inputs" in {
+    "run a complete game with predefined inputs and sorting strat 1" in {
       val p1 = new Player("P1", List(Card(Rank.Ace, Suit.Hearts)))
       val p2 = new Player("P2", List(Card(Rank.King, Suit.Hearts)))
       val game = new Game(List(p1, p2))
@@ -172,11 +211,9 @@ class GameControllerSpec extends AnyWordSpec with Matchers {
         override def update(): Unit = updates += 1
       })
 
-      // Mock the runGame method to avoid infinite loop
-      // Call the mock instead of the actual runGame
       testController.runGame()
 
-      // After playing all cards, the game should be over
+
       testController.gameIsOver should be(true)
       updates should be (60)
     }

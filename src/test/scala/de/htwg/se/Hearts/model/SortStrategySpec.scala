@@ -27,8 +27,9 @@ class SortStrategySpec extends AnyWordSpec with Matchers {
 
   "RandomSort" should {
     "shuffle the cards" in {
-      val shuffled = new RandomSort().sort(hand)
-      shuffled should not equal hand // kann theoretisch auch mal gleich sein
+      val hand2 = List(Card(Rank.Ace, Suit.Hearts),Card(Rank.Two, Suit.Hearts),Card(Rank.Three, Suit.Hearts),Card(Rank.Four, Suit.Hearts),Card(Rank.Five, Suit.Hearts),Card(Rank.Six, Suit.Hearts),Card(Rank.Seven, Suit.Hearts),Card(Rank.Eight, Suit.Hearts),Card(Rank.Nine, Suit.Hearts),Card(Rank.Ten, Suit.Hearts))
+      val shuffled = new RandomSort().sort(hand2)
+      shuffled should not equal hand2 // kann theoretisch auch mal gleich sein
     }
   }
 }

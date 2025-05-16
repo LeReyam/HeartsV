@@ -45,6 +45,7 @@ class GameViewSpec extends AnyWordSpec with Matchers {
         result should include(s.toString)
       }
       result should include ("Empty")
+      controller.handleInput("1")
       controller.handleInput("0")
       val result2 = view.generateOutputStringGamePlayState(controller)
       result2 should not include ("Empty")
