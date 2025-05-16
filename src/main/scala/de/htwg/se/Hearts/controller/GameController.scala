@@ -3,27 +3,39 @@ package de.htwg.se.Hearts.controller
 import de.htwg.se.Hearts.model.*
 import scala.collection.mutable.ListBuffer
 import scala.io.StdIn
+import scala.compiletime.uninitialized
 
-class GameController(game: Game) extends Observable {
+class GameController extends Observable {
+  private var game: Game = uninitialized
   private var currentPot: ListBuffer[Card] = ListBuffer()
   private var currentPlayerIndex: Int = 0
   private var gameOver: Boolean = false
+  private var currentState: GameState = new GetPlayerNumberState()
 
-  def getPlayerCount: Int = game.players.length
+  def initializeGame(newGame: Game): Unit = {
+    game = newGame
+    currentPot = ListBuffer()
+    currentPlayerIndex = 0
+    gameOver = false
+  }
 
-  def getCurrentPlayerName: String = game.players(currentPlayerIndex).name
+  def getPlayerCount: Int = if (game != null) game.players.length else 0
 
-  def getCurrentPlayerHand: List[Card] = game.players(currentPlayerIndex).hand
+  def getCurrentPlayerName: String = if (game != null) game.players(currentPlayerIndex).name else ""
 
-  def getAllPlayers: List[Player] = game.players
+  def getCurrentPlayerHand: List[Card] = if (game != null) game.players(currentPlayerIndex).hand else List()
+
+  def getAllPlayers: List[Player] = if (game != null) game.players else List()
 
   def getCurrentPot: ListBuffer[Card] = currentPot
 
   def gameIsOver: Boolean = gameOver
 
-  def getPlayerPoints(playerIndex: Int): Int = game.players(playerIndex).points
+  def getPlayerPoints(playerIndex: Int): Int = if (game != null) game.players(playerIndex).points else 0
 
   def playCard(index: Int): Boolean = {
+    if (game == null) return false
+
     val currentPlayer = game.players(currentPlayerIndex)
 
     if (index >= 0 && index < currentPlayer.hand.length) {
@@ -40,33 +52,44 @@ class GameController(game: Game) extends Observable {
     }
   }
 
-
   def runGame(): Unit = {
-    var playing = true
+    var running = true
 
-    while (playing && !gameIsOver) {
-      notifyObservers()
-      val cardIndex = getCardIndexFromPlayer()
-      if (cardIndex >= 0) {
-        playCard(cardIndex)
+    notifyObservers()
+
+    while (running) {
+      val input = GetUserInput()
+
+      val nextState = currentState.handleInput(input, this)
+
+      if (nextState != currentState) {
+        currentState = nextState
       }
-      notifyObservers()
-      score()
-      if (gameIsOver) {
-        playing = false
+
+      if (currentState.isInstanceOf[GameOverState] && input.trim.toLowerCase != "y") {
+        running = false
       }
+
+      notifyObservers()
     }
+  }
+
+  protected def GetUserInput(): String = {
+    StdIn.readLine()
+  }
+
+  def getCurrentState(): String = {
+    currentState.generateStateString(this)
+  }
+
+  def handleInput(input: String): Unit = {
+    currentState = currentState.handleInput(input, this)
     notifyObservers()
   }
 
-  protected def getCardIndexFromPlayer(): Int = {
-    val input = StdIn.readLine()
-    parseCardIndex(input)
-  }
-
-
-
   def parseCardIndex(input: String): Int = {
+    if (game == null) return -1
+
     val handSize = getCurrentPlayerHand.length
     try {
       val index = input.toInt
@@ -81,7 +104,9 @@ class GameController(game: Game) extends Observable {
     }
   }
 
-  def score() :Boolean =
+  def score(): Boolean = {
+    if (game == null || getPlayerCount == 0) return false
+
     if (getPlayerCount == getCurrentPot.length) {
       val firstCard = currentPot.head
       val firstSuit = firstCard.suit
@@ -103,7 +128,8 @@ class GameController(game: Game) extends Observable {
       currentPot.clear()
       currentPlayerIndex = winnerIndex
       true
-    }else{
+    } else {
       false
     }
+  }
 }

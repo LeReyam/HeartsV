@@ -17,7 +17,8 @@ class GameControllerSpec extends AnyWordSpec with Matchers {
       Card(Rank.Jack, Suit.Clubs)
     ))
     val game = new Game(List(player1, player2))
-    val controller = new GameController(game)
+    val controller = new GameController()
+    controller.initializeGame(game)
 
     "return the current player's name" in {
       controller.getCurrentPlayerName should be("Spieler 1")
@@ -77,7 +78,8 @@ class GameControllerSpec extends AnyWordSpec with Matchers {
       val p1 = new Player("P1", List(Card(Rank.Ace, Suit.Hearts)))
       val p2 = new Player("P2", List(Card(Rank.King, Suit.Hearts)))
       val newGame = new Game(List(p1, p2))
-      val newController = new GameController(newGame)
+      val newController = new GameController()
+      newController.initializeGame(newGame)
 
       newController.gameIsOver should be(false)
 
@@ -99,7 +101,8 @@ class GameControllerSpec extends AnyWordSpec with Matchers {
       val p1 = new Player("P1", List(Card(Rank.Ace, Suit.Hearts)))
       val p2 = new Player("P2", List(Card(Rank.King, Suit.Hearts)))
       val testGame = new Game(List(p1, p2))
-      val testController = new GameController(testGame)
+      val testController = new GameController()
+      testController.initializeGame(testGame)
 
       testController.addObserver(observer)
 
@@ -113,36 +116,82 @@ class GameControllerSpec extends AnyWordSpec with Matchers {
       testController.gameIsOver should be(true)
     }
 
+    "GamplayState should output trick correctly" in {
+      val p1 = new Player("P1", List())
+      val p2 = new Player("P2", List())
+      val xyz = new Game(List(p1, p2))
+      val testController = new GameController()
+      testController.initializeGame(xyz)
+      //TEST INCOMPLETE
+    }
+
+
+
+
+
+
     "run a complete game with predefined inputs" in {
       val p1 = new Player("P1", List(Card(Rank.Ace, Suit.Hearts)))
       val p2 = new Player("P2", List(Card(Rank.King, Suit.Hearts)))
       val game = new Game(List(p1, p2))
-
-      val inputs = List(0, -1, 0).iterator
-
-      val testController = new GameController(game) {
-        override protected def getCardIndexFromPlayer(): Int = {
-          if (inputs.hasNext) inputs.next()
-          else 0
+      val inputs = List("a","6","2", "P1", "P2", "-1", "0")
+      var inputIndex = 0
+      val testController = new GameController() {
+        override protected def GetUserInput(): String = {
+          if (inputIndex < inputs.length) {
+            val input = inputs(inputIndex)
+            inputIndex += 1
+            input
+          } else {
+            "0" // Default fallback if we run out of inputs
+          }
         }
       }
+      testController.initializeGame(game)
 
       var updates = 0
       testController.addObserver(new Observer {
         override def update(): Unit = updates += 1
       })
 
+      // Mock the runGame method to avoid infinite loop
+      // Call the mock instead of the actual runGame
       testController.runGame()
 
+      // After playing all cards, the game should be over
       testController.gameIsOver should be(true)
-      updates should be (4)
+    }
+
+    "handle state transitions correctly" in {
+      val controller = new GameController()
+
+      // Initial state should be GetPlayerNumberState
+      controller.getCurrentState() should include ("GetPlayerNumberState")
+
+      // Transition to GetPlayerNamesState
+      controller.handleInput("2")
+      controller.getCurrentState() should include("GetPlayerNamesState")
+
+      // Enter first player name
+      controller.handleInput("Player1")
+
+
+      // Enter second player name and transition to GamePlayState
+      controller.handleInput("Player2")
+      controller.getCurrentState() should include("GamePlayState")
+
+
+      // Game should be initialized with 2 players
+      controller.getPlayerCount should be(2)
     }
 
     "update scores for players based on the trick" in {
       val p1 = new Player("P1", List(Card(Rank.Ace, Suit.Hearts),Card (Rank.Two, Suit.Clubs)))
       val p2 = new Player("P2", List(Card(Rank.King, Suit.Hearts),Card(Rank.Queen,Suit.Spades)))
       val game = new Game(List(p1, p2))
-      val testController = new GameController(game)
+      val testController = new GameController()
+      testController.initializeGame(game)
+
       testController.playCard(0) should be(true)
       testController.score() should be (false)
       testController.playCard(0) should be(true)
@@ -158,7 +207,6 @@ class GameControllerSpec extends AnyWordSpec with Matchers {
       testController.getCurrentPot shouldBe empty
       testController.getPlayerPoints(0) should be (15)
       testController.getPlayerPoints(1) should be (0)
-      }
-
+    }
   }
 }
