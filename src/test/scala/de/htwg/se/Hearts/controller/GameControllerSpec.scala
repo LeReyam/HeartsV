@@ -124,7 +124,7 @@ class GameControllerSpec extends AnyWordSpec with Matchers {
       controller.getCurrentState() should include("GetPlayerNamesState")
       controller.handleInput("Player1")
       controller.handleInput("Player2")
-      controller.getCurrentState() should be ("GetSortStrtegyState")
+      controller.getCurrentState() should be ("GetSortStrategyState")
       controller.handleInput("1")
       controller.getCurrentState() should include("GamePlayState")
       controller.getPlayerCount should be(2)
