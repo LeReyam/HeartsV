@@ -33,6 +33,7 @@ class GetPlayerNumberState extends GameState {
 }
 
 // State for collecting player names
+// State for collecting player names
 class GetPlayerNamesState(playerCount: Int) extends GameState {
   private var playerNames: List[String] = List()
   private var currentPlayerIndex: Int = 0
@@ -46,12 +47,14 @@ class GetPlayerNamesState(playerCount: Int) extends GameState {
       // All player names collected, create the game and move to gameplay state
       val game = Dealer.deal(Dealer.shuffle(Dealer.createDeck()), playerNames)
       controller.initializeGame(game)
-      new GamePlayState()
+      new GetSortStrategyState()
+
     } else {
       // Continue collecting names
       this
     }
   }
+
 
   override def generateStateString(controller: GameController): String = {
     "GetPlayerNamesState"
@@ -81,6 +84,29 @@ class GamePlayState extends GameState {
   override def generateStateString(controller: GameController): String = {
     "GamePlayState"
   }
+}
+class GetSortStrategyState extends GameState {
+  override def handleInput(input: String, controller: GameController): GameState = {
+    input.trim match {
+      case "1" =>
+        controller.setSortStrategy(new SortBySuitThenRank())
+        new GamePlayState()
+      case "2" =>
+        controller.setSortStrategy(new SortByRankOnly())
+        new GamePlayState()
+      case "3" =>
+        controller.setSortStrategy(new RandomSort())
+        new GamePlayState()
+      case _ =>
+        // Ungültige Eingabe, wiederhole Auswahl
+        this
+    }
+  }
+
+  override def generateStateString(controller: GameController): String = {
+    "GetSortStrategyState"
+  }
+
 }
 
 // State for game over

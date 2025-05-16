@@ -11,6 +11,15 @@ class GameController extends Observable {
   private var currentPlayerIndex: Int = 0
   private var gameOver: Boolean = false
   private var currentState: GameState = new GetPlayerNumberState()
+  private var sortStrategy: SortStrategy = new SortBySuitThenRank()
+
+  def setSortStrategy(strategy: SortStrategy): Unit = {
+    sortStrategy = strategy
+  }
+
+  def getSortedHand: List[Card] = {
+    sortStrategy.sort(getCurrentPlayerHand)
+  }
 
   def initializeGame(newGame: Game): Unit = {
     game = newGame

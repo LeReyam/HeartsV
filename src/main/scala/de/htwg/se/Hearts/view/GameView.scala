@@ -12,6 +12,8 @@ class GameView(controller: GameController) extends Observer {
       case "GetPlayerNamesState" => println(generateOutputStringGetPlayerNamesState(controller))
       case "GamePlayState" => println(generateOutputStringGamePlayState(controller))
       case "GameOverState" => println(generateStateStringGameOverState(controller))
+      case "GetSortStrategyState" => println(generateOutputStringGetSortStrategyState(controller))
+
   }
   def generateOutputStringGetPlayerNumberState(controller: GameController): String = {
     val sb = new StringBuilder
@@ -48,7 +50,7 @@ class GameView(controller: GameController) extends Observer {
 
     val headerBuilder = new StringBuilder("\t")
     headerBuilder.append("|Pts:")
-    val currentPlayerHand = controller.getCurrentPlayerHand
+    val currentPlayerHand = controller.getSortedHand
     for (i <- 0 until currentPlayerHand.length) {
       headerBuilder.append(f"| $i%-2d ")
     }
@@ -84,6 +86,7 @@ class GameView(controller: GameController) extends Observer {
     sb.toString
   }
 
+
   def generateStateStringGameOverState(controller: GameController): String = {
     val sb = new StringBuilder
     val separator = "=" * 80
@@ -106,6 +109,22 @@ class GameView(controller: GameController) extends Observer {
 
     sb.toString
   }
+
+  def generateOutputStringGetSortStrategyState(controller: GameController): String = {
+    val sb = new StringBuilder
+    val separator = "=" * 80
+
+    sb.append(separator).append("\n")
+    sb.append("WÄHLE EINE SORTIERSTRATEGIE\n")
+    sb.append(separator).append("\n")
+    sb.append("1: Nach Farbe und Rang sortieren (Standard)\n")
+    sb.append("2: Nur nach Rang sortieren\n")
+    sb.append("3: Zufällige Reihenfolge\n")
+    sb.append("Bitte gib die Zahl der gewünschten Strategie ein: ")
+
+    sb.toString
+  }
+
 }
 
 
