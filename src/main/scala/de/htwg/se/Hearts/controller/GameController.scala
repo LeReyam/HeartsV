@@ -34,8 +34,6 @@ class GameController extends Observable {
   def getPlayerPoints(playerIndex: Int): Int = if (game != null) game.players(playerIndex).points else 0
 
   def playCard(index: Int): Boolean = {
-    if (game == null) return false
-
     val currentPlayer = game.players(currentPlayerIndex)
 
     if (index >= 0 && index < currentPlayer.hand.length) {
@@ -88,8 +86,6 @@ class GameController extends Observable {
   }
 
   def parseCardIndex(input: String): Int = {
-    if (game == null) return -1
-
     val handSize = getCurrentPlayerHand.length
     try {
       val index = input.toInt
@@ -105,8 +101,6 @@ class GameController extends Observable {
   }
 
   def score(): Boolean = {
-    if (game == null || getPlayerCount == 0) return false
-
     if (getPlayerCount == getCurrentPot.length) {
       val firstCard = currentPot.head
       val firstSuit = firstCard.suit

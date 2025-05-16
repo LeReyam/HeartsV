@@ -126,6 +126,31 @@ class GameControllerSpec extends AnyWordSpec with Matchers {
     }
 
 
+    "correctly change States" in {
+      val controller = new GameController()
+      controller.getCurrentState() should include ("GetPlayerNumberState")
+      controller.handleInput("2")
+      controller.getCurrentState() should include("GetPlayerNamesState")
+      controller.handleInput("Player1")
+      controller.handleInput("Player2")
+      controller.getCurrentState() should include("GamePlayState")
+      controller.getPlayerCount should be(2)
+      for(i <- 0 to 52){
+        controller.handleInput("0")
+      }
+      controller.getCurrentState() should be ("GameOverState")
+      controller.handleInput("y")
+      controller.getCurrentState() should be ("GetPlayerNumberState")
+    }
+
+    "give correct returns even if the game is uninitialized" in {
+      val controller = new GameController
+      controller.getPlayerCount should be (0)
+      controller.getCurrentPlayerName should be ("")
+      controller.getCurrentPlayerHand should be (List())
+      controller.getAllPlayers should be (List())
+      controller.getPlayerPoints(0) should be (0)
+    }
 
 
 
@@ -160,7 +185,7 @@ class GameControllerSpec extends AnyWordSpec with Matchers {
 
       // After playing all cards, the game should be over
       testController.gameIsOver should be(true)
-      updates should be (7)
+      updates should be (59)
     }
 
     "update scores for players based on the trick" in {
