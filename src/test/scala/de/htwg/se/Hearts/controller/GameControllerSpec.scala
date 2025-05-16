@@ -143,6 +143,7 @@ class GameControllerSpec extends AnyWordSpec with Matchers {
       controller.getCurrentPlayerHand should be (List())
       controller.getAllPlayers should be (List())
       controller.getPlayerPoints(0) should be (0)
+      controller.getSortedHandForPlayer(0) should be (List())
     }
 
     "run a complete game with predefined inputs and sorting strat 2" in {
