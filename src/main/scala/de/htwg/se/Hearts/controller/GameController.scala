@@ -12,6 +12,8 @@ class GameController extends Observable {
   private var gameOver: Boolean = false
   private var currentState: GameState = new GetPlayerNumberState()
   private var sortStrategy: SortStrategy = new SortBySuitThenRank()
+  private var commandHistory: ListBuffer[Command] = ListBuffer()
+  private var redoStack: ListBuffer[Command] = ListBuffer()
 
   def setSortStrategy(strategy: SortStrategy): Unit = {
     sortStrategy = strategy
@@ -38,6 +40,8 @@ class GameController extends Observable {
 
   def getPlayerCount: Int = if (game != null) game.players.length else 0
 
+  def getCurrentPlayerIndex: Int = currentPlayerIndex
+
   def getCurrentPlayerName: String = if (game != null) game.players(currentPlayerIndex).name else ""
 
   def getCurrentPlayerHand: List[Card] = if (game != null) game.players(currentPlayerIndex).hand else List()
@@ -46,26 +50,95 @@ class GameController extends Observable {
 
   def getCurrentPot: ListBuffer[Card] = currentPot
 
+  def addCardToPot(card: Card): Unit = {
+    currentPot += card
+  }
+
+  def removeCardFromPot(card: Card): Unit = {
+    currentPot -= card
+  }
+
   def gameIsOver: Boolean = gameOver
+
+  def setCurrentPlayerIndex(index: Int): Unit = {
+    if (game != null && index >= 0 && index < game.players.length) {
+      currentPlayerIndex = index
+    }
+  }
+
+  def advanceToNextPlayer(): Unit = {
+    currentPlayerIndex = (currentPlayerIndex + 1) % game.players.length
+    if (game.players.forall(_.hand.isEmpty)) {
+      gameOver = true
+    }
+  }
 
   def getPlayerPoints(playerIndex: Int): Int = if (game != null) game.players(playerIndex).points else 0
 
   def playCard(index: Int): Boolean = {
-    val currentPlayer = game.players(currentPlayerIndex)
+    val command = new PlayCardCommand(this, index)
+    val result = command.execute()
 
-    if (index >= 0 && index < currentPlayer.hand.length) {
-      // Get the sorted hand and use the index on it to find the correct card
-      val sortedHand = sortStrategy.sort(currentPlayer.hand)
-      val selectedCard = sortedHand(index)
+    if (result) {
+      commandHistory += command
+      redoStack.clear()  // Clear redo stack when a new command is executed
+    }
 
-      // Remove the selected card from the player's hand
-      currentPlayer.removeCard(selectedCard)
-      currentPot += selectedCard
-      currentPlayerIndex = (currentPlayerIndex + 1) % game.players.length
-      if (game.players.forall(_.hand.isEmpty)) {
-        gameOver = true
+    result
+  }
+
+  def undoLastCard(): Boolean = {
+    if (commandHistory.nonEmpty) {
+      val lastCommand = commandHistory.last
+      val result = lastCommand.undo()
+
+      if (result) {
+        commandHistory.remove(commandHistory.size - 1)
+        redoStack.prepend(lastCommand)  // Add to redo stack
+
+        // If we just undid a ScoreCommand, automatically undo the PlayCardCommand that led to it
+        if (lastCommand.isInstanceOf[ScoreCommand] && commandHistory.nonEmpty &&
+            commandHistory.last.isInstanceOf[PlayCardCommand]) {
+          val playCardCommand = commandHistory.last
+          val playCardResult = playCardCommand.undo()
+
+          if (playCardResult) {
+            commandHistory.remove(commandHistory.size - 1)
+            redoStack.prepend(playCardCommand)  // Add to redo stack
+          }
+        }
       }
-      true
+
+      result
+    } else {
+      false
+    }
+  }
+
+  def redoLastCard(): Boolean = {
+    if (redoStack.nonEmpty) {
+      val commandToRedo = redoStack.head
+      val result = commandToRedo.execute()
+
+      if (result) {
+        redoStack.remove(0)  // Remove from redo stack
+        commandHistory += commandToRedo  // Add back to command history
+
+        // If we just redid a PlayCardCommand and there's a ScoreCommand next in the redo stack,
+        // automatically redo the ScoreCommand as well
+        if (commandToRedo.isInstanceOf[PlayCardCommand] && redoStack.nonEmpty &&
+            redoStack.head.isInstanceOf[ScoreCommand]) {
+          val scoreCommand = redoStack.head
+          val scoreResult = scoreCommand.execute()
+
+          if (scoreResult) {
+            redoStack.remove(0)  // Remove from redo stack
+            commandHistory += scoreCommand  // Add back to command history
+          }
+        }
+      }
+
+      result
     } else {
       false
     }
@@ -123,36 +196,13 @@ class GameController extends Observable {
   }
 
   def score(): Boolean = {
-    if (getPlayerCount == getCurrentPot.length) {
-      val firstCard = currentPot.head
-      val firstSuit = firstCard.suit
-      val highestCard = currentPot
-        .filter(_.suit == firstSuit)
-        .maxBy(card => card.rank)
+    val command = new ScoreCommand(this)
+    val result = command.execute()
 
-      val potSize = currentPot.length
-      val playerCount = game.players.length
-      val firstPlayerIndex = currentPlayerIndex
-
-      val highCardPosition = currentPot.indexOf(highestCard)
-      val winnerIndex = (firstPlayerIndex + highCardPosition) % playerCount
-
-      var trickPoints = 0
-      for (card <- currentPot) {
-        if (card.suit == Suit.Hearts) {
-          trickPoints += 1
-        }
-        else if (card.suit == Suit.Spades && card.rank == Rank.Queen) {
-          trickPoints += 13
-        }
-      }
-      val winner = game.players(winnerIndex)
-      winner.points += trickPoints
-      currentPot.clear()
-      currentPlayerIndex = winnerIndex
-      true
-    } else {
-      false
+    if (result) {
+      commandHistory += command
     }
+
+    result
   }
 }

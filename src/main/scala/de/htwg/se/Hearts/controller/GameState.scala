@@ -64,25 +64,50 @@ class GetPlayerNamesState(playerCount: Int) extends GameState {
 // State for the main gameplay
 class GamePlayState extends GameState {
   override def handleInput(input: String, controller: GameController): GameState = {
-    val cardIndex = controller.parseCardIndex(input)
+    input.trim.toLowerCase match {
+      case "undo" =>
+        // Handle undo command
+        if (controller.undoLastCard()) {
+          // Successfully undid the last move
+          this
+        } else {
+          // No moves to undo or undo failed
+          this
+        }
+      case "redo" =>
+        // Handle redo command
+        if (controller.redoLastCard()) {
+          // Successfully redid the last undone move
+          this
+        } else {
+          // No moves to redo or redo failed
+          this
+        }
+      case _ =>
+        // Try to parse as card index
+        val cardIndex = controller.parseCardIndex(input)
 
-    if (cardIndex >= 0) {
-      controller.playCard(cardIndex)
-      controller.score()
+        if (cardIndex >= 0) {
+          controller.playCard(cardIndex)
+          controller.score()
 
-      if (controller.gameIsOver) {
-        new GameOverState()
-      } else {
-        this
-      }
-    } else {
-      // Invalid input, stay in this state
-      this
+          if (controller.gameIsOver) {
+            new GameOverState()
+          } else {
+            this
+          }
+        } else {
+          // Invalid input, stay in this state
+          this
+        }
     }
   }
 
   override def generateStateString(controller: GameController): String = {
-    "GamePlayState"
+    val stateString = new StringBuilder("GamePlayState\n")
+    stateString.append("Type 'undo' to take back your last move\n")
+    stateString.append("Type 'redo' to redo an undone move\n")
+    stateString.toString
   }
 }
 class GetSortStrategyState extends GameState {

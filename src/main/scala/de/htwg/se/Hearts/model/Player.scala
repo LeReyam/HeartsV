@@ -10,5 +10,9 @@ class Player(val name: String, private var _hand: List[Card]) {
   def removeCard(card: Card): Unit = {
     _hand = _hand.filterNot(_ == card)
   }
+
+  def addCard(card: Card): Unit = {
+    _hand = _hand :+ card
+  }
 }
 

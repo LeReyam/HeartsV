@@ -7,13 +7,18 @@ class GameView(controller: GameController) extends Observer {
   controller.addObserver(this)
 
   override def update(): Unit = {
-    controller.getCurrentState() match
-      case "GetPlayerNumberState" => println(generateOutputStringGetPlayerNumberState(controller))
-      case "GetPlayerNamesState" => println(generateOutputStringGetPlayerNamesState(controller))
-      case "GamePlayState" => println(generateOutputStringGamePlayState(controller))
-      case "GameOverState" => println(generateStateStringGameOverState(controller))
-      case "GetSortStrategyState" => println(generateOutputStringGetSortStrategyState(controller))
-
+    val state = controller.getCurrentState()
+    if (state.startsWith("GetPlayerNumberState")) {
+      println(generateOutputStringGetPlayerNumberState(controller))
+    } else if (state.startsWith("GetPlayerNamesState")) {
+      println(generateOutputStringGetPlayerNamesState(controller))
+    } else if (state.startsWith("GamePlayState")) {
+      println(generateOutputStringGamePlayState(controller))
+    } else if (state.startsWith("GameOverState")) {
+      println(generateStateStringGameOverState(controller))
+    } else if (state.startsWith("GetSortStrategyState")) {
+      println(generateOutputStringGetSortStrategyState(controller))
+    }
   }
   def generateOutputStringGetPlayerNumberState(controller: GameController): String = {
     val sb = new StringBuilder
