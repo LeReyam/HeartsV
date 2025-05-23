@@ -94,7 +94,7 @@ class GameController extends Observable {
 
       if (result) {
         commandHistory.remove(commandHistory.size - 1)
-        redoStack.prepend(lastCommand)  // Add to redo stack
+        redoStack.prepend(lastCommand)
       }
 
       result
@@ -106,11 +106,11 @@ class GameController extends Observable {
   def redoLastCard(): Boolean = {
     if (redoStack.nonEmpty) {
       val commandToRedo = redoStack.head
-      val result = commandToRedo.redo()  // Use redo() instead of execute()
+      val result = commandToRedo.redo()
 
       if (result) {
-        redoStack.remove(0)  // Remove from redo stack
-        commandHistory += commandToRedo  // Add back to command history
+        redoStack.remove(0)
+        commandHistory += commandToRedo  
       }
 
       result
@@ -157,8 +157,6 @@ class GameController extends Observable {
   def parseCardIndex(input: String): Int = {
     val sortedHand = getSortedHand
     val handSize = sortedHand.length
-
-    // Convert the input to Option[Int], then validate the range
     scala.util.Try(input.toInt).toOption
       .filter(index => index >= 0 && index < handSize)
       .getOrElse(-1)
