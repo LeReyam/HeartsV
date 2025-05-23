@@ -4,6 +4,7 @@ import de.htwg.se.Hearts.model.*
 import scala.collection.mutable.ListBuffer
 import scala.io.StdIn
 import scala.compiletime.uninitialized
+import scala.util.Try
 
 class GameController extends Observable {
   private var game: Game = uninitialized
@@ -102,19 +103,22 @@ class GameController extends Observable {
     notifyObservers()
   }
 
+  def getInternalPlayerNameStateInfo: Either[Unit, (Int, Int)] = {
+  currentState match {
+    case s: GetPlayerNamesState =>
+      s.getInternalState
+    case _ => Left(())
+  }
+}
+
+
   def parseCardIndex(input: String): Int = {
     val handSize = getCurrentPlayerHand.length
-    try {
-      val index = input.toInt
-      if (index >= 0 && index < handSize) {
-        index
-      } else {
-        -1
-      }
-    } catch {
-      case _: NumberFormatException =>
-        -1
+    Try(input.toInt).toOption match {
+      case Some(index) if index >= 0 && index < getCurrentPlayerHand.length => index
+      case _ => -1
     }
+
   }
 
   def score(): Boolean = {

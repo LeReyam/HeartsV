@@ -6,11 +6,11 @@ import org.scalatest.matchers.should.Matchers
 class GameSpec extends AnyWordSpec with Matchers {
 
   "A Game" should {
-    val alice = new Player("Alice", List(
+    val alice = new HumanPlayer("Alice", List(
       Card(Rank.Two, Suit.Hearts),
       Card(Rank.Ace, Suit.Spades)
     ))
-    val bob = new Player("Bob", List(
+    val bob = BotPlayer("Bot_1", List(
       Card(Rank.Ten, Suit.Clubs),
       Card(Rank.King, Suit.Diamonds)
     ))

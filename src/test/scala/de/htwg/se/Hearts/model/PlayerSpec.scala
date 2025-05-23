@@ -1,16 +1,13 @@
 package de.htwg.se.Hearts.model
 
-import de.htwg.se.Hearts.controller.*
-import de.htwg.se.Hearts.model.*
-
 import org.scalatest.wordspec.AnyWordSpec
 import org.scalatest.matchers.should.Matchers
 
 class PlayerSpec extends AnyWordSpec with Matchers {
 
-  "A Player" should {
+  "A HumanPlayer" should {
     "have a name and hand" in {
-      val player = new Player("Alice", List(
+      val player = new HumanPlayer("Alice", List(
         Card(Rank.Ten, Suit.Hearts),
         Card(Rank.Five, Suit.Hearts)
       ))
@@ -22,7 +19,7 @@ class PlayerSpec extends AnyWordSpec with Matchers {
     }
 
     "update hand after playing a Card" in {
-      val player = new Player("Alice", List(
+      val player = new HumanPlayer("Alice", List(
         Card(Rank.Ten, Suit.Hearts),
         Card(Rank.Five, Suit.Hearts)
       ))
@@ -33,12 +30,11 @@ class PlayerSpec extends AnyWordSpec with Matchers {
     }
 
     "handle playing a card that is not in hand" in {
-      val player = new Player("Alice", List(
+      val player = new HumanPlayer("Alice", List(
         Card(Rank.Ten, Suit.Hearts),
         Card(Rank.Five, Suit.Hearts)
       ))
 
-      // Playing a card not in hand should not change the hand
       player.removeCard(Card(Rank.Ace, Suit.Spades))
       player.hand should have length 2
       player.hand should contain(Card(Rank.Ten, Suit.Hearts))
@@ -46,16 +42,24 @@ class PlayerSpec extends AnyWordSpec with Matchers {
     }
 
     "handle empty hand" in {
-      val player = new Player("Alice", List())
+      val player = new HumanPlayer("Alice", List())
       player.hand should be(empty)
-
-      // Playing a card with empty hand should not cause errors
       noException should be thrownBy player.removeCard(Card(Rank.Ace, Suit.Spades))
     }
 
     "have a score associated" in {
-      val player = new Player("Alice", List())
+      val player = new HumanPlayer("Alice", List())
       player.points should be (0)
+      player.points = 10
+      player.points should be (10)
+    }
+  }
+
+  "A BotPlayer" should {
+    "be instantiated and behave like a Player" in {
+      val bot = BotPlayer("Bot_1", List(Card(Rank.Seven, Suit.Spades)))
+      bot.name should be("Bot_1")
+      bot.hand should contain only Card(Rank.Seven, Suit.Spades)
     }
   }
 }
