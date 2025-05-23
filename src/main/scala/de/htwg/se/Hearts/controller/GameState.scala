@@ -13,18 +13,11 @@ trait GameState {
 
 class GetPlayerNumberState extends GameState {
   override def handleInput(input: String, controller: GameController): GameState = {
-    try {
-      val playerCount = input.toInt
-      if (playerCount >= 2 && playerCount <= 4) {
-        // Valid player count, transition to collecting player names
-        new GetPlayerNamesState(playerCount)
-      } else {
-        // Invalid player count, stay in this state
-        this
-      }
-    } catch {
-      case _: NumberFormatException => this // Invalid input, stay in this state
-    }
+    // Convert input to Option[Int], then validate the range
+    scala.util.Try(input.toInt).toOption
+      .filter(count => count >= 2 && count <= 4)
+      .map(count => new GetPlayerNamesState(count))
+      .getOrElse(this)
   }
 
   override def generateStateString(controller: GameController): String = {
@@ -32,25 +25,19 @@ class GetPlayerNumberState extends GameState {
   }
 }
 
-// State for collecting player names
-// State for collecting player names
 class GetPlayerNamesState(playerCount: Int) extends GameState {
   private var playerNames: List[String] = List()
   private var currentPlayerIndex: Int = 0
 
   override def handleInput(input: String, controller: GameController): GameState = {
-    // Add the new player name
     playerNames = playerNames :+ input
     currentPlayerIndex += 1
-
     if (currentPlayerIndex >= playerCount) {
-      // All player names collected, create the game and move to gameplay state
       val game = Dealer.deal(Dealer.shuffle(Dealer.createDeck()), playerNames)
       controller.initializeGame(game)
       new GetSortStrategyState()
 
     } else {
-      // Continue collecting names
       this
     }
   }
@@ -61,43 +48,32 @@ class GetPlayerNamesState(playerCount: Int) extends GameState {
   }
 }
 
-// State for the main gameplay
 class GamePlayState extends GameState {
   override def handleInput(input: String, controller: GameController): GameState = {
     input.trim.toLowerCase match {
       case "undo" =>
-        // Handle undo command
         if (controller.undoLastCard()) {
-          // Successfully undid the last move
           this
         } else {
-          // No moves to undo or undo failed
           this
         }
       case "redo" =>
-        // Handle redo command
         if (controller.redoLastCard()) {
-          // Successfully redid the last undone move
           this
         } else {
-          // No moves to redo or redo failed
           this
         }
       case _ =>
-        // Try to parse as card index
         val cardIndex = controller.parseCardIndex(input)
 
         if (cardIndex >= 0) {
           controller.playCard(cardIndex)
-          // Scoring is now handled within the PlayCardCommand
-
           if (controller.gameIsOver) {
             new GameOverState()
           } else {
             this
           }
         } else {
-          // Invalid input, stay in this state
           this
         }
     }
@@ -123,7 +99,6 @@ class GetSortStrategyState extends GameState {
         controller.setSortStrategy(new RandomSort())
         new GamePlayState()
       case _ =>
-        // Ungültige Eingabe, wiederhole Auswahl
         this
     }
   }

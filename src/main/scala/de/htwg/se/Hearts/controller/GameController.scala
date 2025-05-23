@@ -81,7 +81,7 @@ class GameController extends Observable {
 
     if (result) {
       commandHistory += command
-      redoStack.clear()  // Clear redo stack when a new command is executed
+      redoStack.clear()
     }
 
     result
@@ -157,18 +157,11 @@ class GameController extends Observable {
   def parseCardIndex(input: String): Int = {
     val sortedHand = getSortedHand
     val handSize = sortedHand.length
-    try {
-      val index = input.toInt
-      if (index >= 0 && index < handSize) {
-        index
-      } else {
-        -1
-      }
-    } catch {
-      case _: NumberFormatException =>
-        -1
-    }
+
+    // Convert the input to Option[Int], then validate the range
+    scala.util.Try(input.toInt).toOption
+      .filter(index => index >= 0 && index < handSize)
+      .getOrElse(-1)
   }
 
-  // Score functionality has been merged into PlayCardCommand
 }
