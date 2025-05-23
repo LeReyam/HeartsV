@@ -89,7 +89,7 @@ class GamePlayState extends GameState {
 
         if (cardIndex >= 0) {
           controller.playCard(cardIndex)
-          controller.score()
+          // Scoring is now handled within the PlayCardCommand
 
           if (controller.gameIsOver) {
             new GameOverState()

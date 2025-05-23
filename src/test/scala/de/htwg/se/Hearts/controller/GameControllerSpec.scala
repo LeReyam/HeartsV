@@ -128,7 +128,12 @@ class GameControllerSpec extends AnyWordSpec with Matchers {
       controller.handleInput("1")
       controller.getCurrentState() should include("GamePlayState")
       controller.getPlayerCount should be(2)
-      for(i <- 0 to 52){
+      controller.handleInput("redo")
+      controller.handleInput("undo")
+      controller.handleInput("0")
+      controller.handleInput("undo")
+      controller.handleInput("redo")
+      for(i <- 0 to 51){
         controller.handleInput("0")
       }
       controller.getCurrentState() should be ("GameOverState")
@@ -219,28 +224,95 @@ class GameControllerSpec extends AnyWordSpec with Matchers {
       updates should be (60)
     }
 
-    "update scores for players based on the trick" in {
+    "update scores for players automatically when all players have played a card" in {
       val p1 = new Player("P1", List(Card(Rank.Ace, Suit.Hearts),Card (Rank.Two, Suit.Clubs)))
       val p2 = new Player("P2", List(Card(Rank.King, Suit.Hearts),Card(Rank.Queen,Suit.Spades)))
       val game = new Game(List(p1, p2))
       val testController = new GameController()
       testController.initializeGame(game)
 
+      // First player plays a card
       testController.playCard(0) should be(true)
-      testController.score() should be (false)
+      // Pot should have one card
+      testController.getCurrentPot.size should be(1)
+      // No scoring yet
+      testController.getPlayerPoints(0) should be (0)
+      testController.getPlayerPoints(1) should be (0)
+
+      // Second player plays a card, which should trigger scoring
       testController.playCard(0) should be(true)
-      testController.score() should be (true)
+      // Pot should be empty after scoring
       testController.getCurrentPot shouldBe empty
+      // Player 1 should have 2 points (Ace of Hearts)
       testController.getPlayerPoints(0) should be (2)
       testController.getPlayerPoints(1) should be (0)
 
+      // First player plays another card
       testController.playCard(0) should be(true)
-      testController.score() should be (false)
+      // Pot should have one card
+      testController.getCurrentPot.size should be(1)
+
+      // Second player plays another card, which should trigger scoring
       testController.playCard(0) should be(true)
-      testController.score() should be (true)
+      // Pot should be empty after scoring
       testController.getCurrentPot shouldBe empty
+      // Player 1 should now have 15 points (2 + 13 for Queen of Spades)
       testController.getPlayerPoints(0) should be (15)
       testController.getPlayerPoints(1) should be (0)
+    }
+
+    "support undo and redo of card plays" in {
+      val p1 = new Player("P1", List(Card(Rank.Ace, Suit.Hearts), Card(Rank.Two, Suit.Clubs)))
+      val p2 = new Player("P2", List(Card(Rank.King, Suit.Hearts), Card(Rank.Queen, Suit.Spades)))
+      val game = new Game(List(p1, p2))
+      val testController = new GameController()
+      testController.initializeGame(game)
+
+      // Initial state
+      testController.getCurrentPlayerName should be("P1")
+      testController.getCurrentPlayerHand.size should be(2)
+      testController.getCurrentPot.size should be(0)
+
+      // Play a card
+      testController.playCard(0) should be(true)
+      testController.getCurrentPlayerName should be("P2")
+      testController.getCurrentPot.size should be(1)
+      testController.getCurrentPot.head should be(Card(Rank.Ace, Suit.Hearts))
+      p1.hand.size should be(1)
+
+      // Undo the play
+      testController.undoLastCard() should be(true)
+      testController.getCurrentPlayerName should be("P1")
+      testController.getCurrentPot.size should be(0)
+      p1.hand.size should be(2)
+      p1.hand should contain(Card(Rank.Ace, Suit.Hearts))
+
+      // Redo the play
+      testController.redoLastCard() should be(true)
+      testController.getCurrentPlayerName should be("P2")
+      testController.getCurrentPot.size should be(1)
+      testController.getCurrentPot.head should be(Card(Rank.Ace, Suit.Hearts))
+      p1.hand.size should be(1)
+
+      // Play another card to complete the trick
+      testController.playCard(0) should be(true)
+      testController.getCurrentPot.size should be(0) // Pot is cleared after scoring
+      testController.getPlayerPoints(0) should be(2) // P1 gets 2 points for Ace of Hearts
+
+      // Undo the second play (which includes undoing the scoring)
+      testController.undoLastCard() should be(true)
+      testController.getCurrentPlayerName should be("P2")
+      testController.getCurrentPot.size should be(1)
+      testController.getCurrentPot.head should be(Card(Rank.Ace, Suit.Hearts))
+      testController.getPlayerPoints(0) should be(0) // Points should be back to 0
+      p2.hand.size should be(2)
+      p2.hand should contain(Card(Rank.King, Suit.Hearts))
+
+      // Redo the second play (which includes redoing the scoring)
+      testController.redoLastCard() should be(true)
+      testController.getCurrentPot.size should be(0) // Pot is cleared after scoring
+      testController.getPlayerPoints(0) should be(2) // P1 gets 2 points for Ace of Hearts
+      p2.hand.size should be(1)
     }
   }
 }

@@ -95,18 +95,6 @@ class GameController extends Observable {
       if (result) {
         commandHistory.remove(commandHistory.size - 1)
         redoStack.prepend(lastCommand)  // Add to redo stack
-
-        // If we just undid a ScoreCommand, automatically undo the PlayCardCommand that led to it
-        if (lastCommand.isInstanceOf[ScoreCommand] && commandHistory.nonEmpty &&
-            commandHistory.last.isInstanceOf[PlayCardCommand]) {
-          val playCardCommand = commandHistory.last
-          val playCardResult = playCardCommand.undo()
-
-          if (playCardResult) {
-            commandHistory.remove(commandHistory.size - 1)
-            redoStack.prepend(playCardCommand)  // Add to redo stack
-          }
-        }
       }
 
       result
@@ -118,24 +106,11 @@ class GameController extends Observable {
   def redoLastCard(): Boolean = {
     if (redoStack.nonEmpty) {
       val commandToRedo = redoStack.head
-      val result = commandToRedo.execute()
+      val result = commandToRedo.redo()  // Use redo() instead of execute()
 
       if (result) {
         redoStack.remove(0)  // Remove from redo stack
         commandHistory += commandToRedo  // Add back to command history
-
-        // If we just redid a PlayCardCommand and there's a ScoreCommand next in the redo stack,
-        // automatically redo the ScoreCommand as well
-        if (commandToRedo.isInstanceOf[PlayCardCommand] && redoStack.nonEmpty &&
-            redoStack.head.isInstanceOf[ScoreCommand]) {
-          val scoreCommand = redoStack.head
-          val scoreResult = scoreCommand.execute()
-
-          if (scoreResult) {
-            redoStack.remove(0)  // Remove from redo stack
-            commandHistory += scoreCommand  // Add back to command history
-          }
-        }
       }
 
       result
@@ -195,14 +170,5 @@ class GameController extends Observable {
     }
   }
 
-  def score(): Boolean = {
-    val command = new ScoreCommand(this)
-    val result = command.execute()
-
-    if (result) {
-      commandHistory += command
-    }
-
-    result
-  }
+  // Score functionality has been merged into PlayCardCommand
 }
