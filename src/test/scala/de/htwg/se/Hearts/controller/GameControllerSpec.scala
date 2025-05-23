@@ -214,6 +214,24 @@ class GameControllerSpec extends AnyWordSpec with Matchers {
 
     }
 
+    "add human player and increment currentPlayerIndex in GetPlayerNamesState" in {
+      val controller = new GameController()
+      controller.handleInput("2")      // total players
+      controller.handleInput("1")      // 1 human
+      controller.handleInput("Alice")  // triggers: currentPlayerIndex += 1
+
+      controller.getAllPlayers.exists(_.name == "Alice") should be(true)
+    }
+
+    "skip manual name input if human count is zero" in {
+      val controller = new GameController()
+      controller.handleInput("2")      // total players
+      controller.handleInput("0")      // 0 human players → skips manual input entirely
+
+      controller.getAllPlayers.forall(_.name.startsWith("Bot_")) should be(true)
+    }
+
+
     "stay in GetPlayerNamesState on out-of-range number of human players" in {
       val controller = new GameController()
       controller.handleInput("4")          // Spieleranzahl 4

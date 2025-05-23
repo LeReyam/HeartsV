@@ -45,14 +45,16 @@ class GetPlayerNamesState(playerCount: Int) extends GameState {
 
       case Some(humanCount) =>
         if (currentPlayerIndex < humanCount) {
-          playerNames = playerNames :+ input
+          playerNames = playerNames :+ input.trim
           currentPlayerIndex += 1
         }
 
-        // Alle Bots sofort hinzufügen
-        while (currentPlayerIndex >= humanCount && currentPlayerIndex < playerCount) {
-          playerNames = playerNames :+ s"Bot_${currentPlayerIndex - humanCount + 1}"
-          currentPlayerIndex += 1
+        // Bot-Auffüllung danach:
+        if (currentPlayerIndex >= humanCount && currentPlayerIndex < playerCount) {
+          while (currentPlayerIndex < playerCount) {
+            playerNames = playerNames :+ s"Bot_${currentPlayerIndex - humanCount + 1}"
+            currentPlayerIndex += 1
+          }
         }
 
         if (currentPlayerIndex >= playerCount) {
