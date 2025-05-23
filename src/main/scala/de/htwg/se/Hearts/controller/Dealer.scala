@@ -17,5 +17,10 @@ object Dealer:
     var reducedDeck = deck.filterNot(_ == deck.take(leftovers))
 
     val hands = deck.grouped(deck.length/playerNames.length).toList
-    val players = playerNames.zip(hands).map { case (name, hand) => Player(name, hand) }
+    val players = playerNames.zip(hands).zipWithIndex.map {
+      case ((name, hand), i) =>
+        val kind = if (i == 0) "human" else "bot" // z. B. Spieler 1 ist menschlich, Rest Bots
+        PlayerFactory.createPlayer(kind, name, hand)
+    }
+
     Game(players)

@@ -33,16 +33,22 @@ class GameView(controller: GameController) extends Observer {
   }
 
   def generateOutputStringGetPlayerNamesState(controller: GameController): String = {
-    val sb = new StringBuilder
-    val separator = "=" * 80
+  val separator = "=" * 80
+  val header = "HEARTS GAME SETUP"
+  val state = controller.getInternalPlayerNameStateInfo  // <- eigene neue Methode
 
-    sb.append(separator).append("\n")
-    sb.append("HEARTS GAME SETUP\n")
-    sb.append(separator).append("\n\n")
-    sb.append(s"Enter name for Player: ")
-
-    sb.toString
+  val prompt = state match {
+    case Left(_) => "Wie viele menschliche Spieler?"
+    case Right((index, _)) =>
+      s"Gib den Namen für Spieler ${index + 1} ein:"
   }
+
+  separator + "\n" +
+  header + "\n" +
+  separator + "\n\n" +
+  prompt
+}
+
 
 
   def generateOutputStringGamePlayState(controller: GameController): String = {
@@ -65,7 +71,8 @@ class GameView(controller: GameController) extends Observer {
     sb.append(headerBuilder.toString())
 
     // Find the longest player name to determine fixed width
-    val maxNameLength = controller.getAllPlayers.map(_.name.length).max + 3 // +3 for the marker " *"
+    val maxNameLength = controller.getAllPlayers.map(_.name.length).maxOption.getOrElse(0) + 3
+
 
     // Get all players and their indices
     val playersWithIndices = controller.getAllPlayers.zipWithIndex
@@ -102,27 +109,28 @@ class GameView(controller: GameController) extends Observer {
 
 
   def generateStateStringGameOverState(controller: GameController): String = {
-    val sb = new StringBuilder
     val separator = "=" * 80
+    val header = "GAME OVER"
 
-    sb.append(separator).append("\n")
-    sb.append("GAME OVER\n")
-    sb.append(separator).append("\n\n")
+    val allPlayers = controller.getAllPlayers
+    val scoreSection =
+      if (allPlayers.isEmpty) {
+        "Keine Spieler vorhanden."
+      } else {
+        val sortedPlayers = allPlayers.sortBy(_.points)
+        sortedPlayers.zipWithIndex.map { case (player, index) =>
+          s"${index + 1}. ${player.name}: ${player.points} points"
+        }.mkString("\n")
+      }
 
-    sb.append("Final Scores:\n")
-
-    // Sort players by points (lowest first, as in Hearts lower is better)
-    val sortedPlayers = controller.getAllPlayers.sortBy(_.points)
-
-    sortedPlayers.zipWithIndex.foreach { case (player, index) =>
-      sb.append(s"${index + 1}. ${player.name}: ${player.points} points\n")
-    }
-
-    sb.append("\n")
-    sb.append("Play again? (y/n): ")
-
-    sb.toString
+    separator + "\n" +
+    header + "\n" +
+    separator + "\n\n" +
+    "Final Scores:\n" +
+    scoreSection + "\n\n" +
+    "Play again? (y/n): "
   }
+
 
   def generateOutputStringGetSortStrategyState(controller: GameController): String = {
     val sb = new StringBuilder

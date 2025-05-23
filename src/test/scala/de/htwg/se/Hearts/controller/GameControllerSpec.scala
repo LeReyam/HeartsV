@@ -8,11 +8,11 @@ import scala.collection.mutable.ListBuffer
 class GameControllerSpec extends AnyWordSpec with Matchers {
 
   "A GameController" should {
-    val player1 = new Player("Spieler 1", List(
+    val player1 = new HumanPlayer("Spieler 1", List(
       Card(Rank.Ace, Suit.Hearts),
       Card(Rank.King, Suit.Hearts)
     ))
-    val player2 = new Player("Spieler 2", List(
+    val player2 = BotPlayer("Bot_1", List(
       Card(Rank.Queen, Suit.Diamonds),
       Card(Rank.Jack, Suit.Clubs)
     ))
@@ -49,7 +49,7 @@ class GameControllerSpec extends AnyWordSpec with Matchers {
 
     "allow a player to play a card" in {
       controller.playCard(0) should be(true)
-      controller.getCurrentPlayerName should be("Spieler 2")
+      controller.getCurrentPlayerName should be("Bot_1")
       controller.getCurrentPot.size should be(1)
     }
 
@@ -75,8 +75,8 @@ class GameControllerSpec extends AnyWordSpec with Matchers {
     }
 
     "correctly detect game over when all players have no cards" in {
-      val p1 = new Player("P1", List(Card(Rank.Ace, Suit.Hearts)))
-      val p2 = new Player("P2", List(Card(Rank.King, Suit.Hearts)))
+      val p1 = new HumanPlayer("P1", List(Card(Rank.Ace, Suit.Hearts)))
+      val p2 = new HumanPlayer("P2", List(Card(Rank.King, Suit.Hearts)))
       val newGame = new Game(List(p1, p2))
       val newController = new GameController()
       newController.initializeGame(newGame)
@@ -98,8 +98,8 @@ class GameControllerSpec extends AnyWordSpec with Matchers {
         }
       }
 
-      val p1 = new Player("P1", List(Card(Rank.Ace, Suit.Hearts)))
-      val p2 = new Player("P2", List(Card(Rank.King, Suit.Hearts)))
+      val p1 = new HumanPlayer("P1", List(Card(Rank.Ace, Suit.Hearts)))
+      val p2 = new HumanPlayer("P2", List(Card(Rank.King, Suit.Hearts)))
       val testGame = new Game(List(p1, p2))
       val testController = new GameController()
       testController.initializeGame(testGame)
@@ -116,11 +116,24 @@ class GameControllerSpec extends AnyWordSpec with Matchers {
       testController.gameIsOver should be(true)
     }
 
+    "handle invalid human player input and stay in GetPlayerNamesState" in {
+      val controller = new GameController()
+      controller.handleInput("3")         // Gesamtspielerzahl
+      controller.handleInput("abc")       // Ungültiger Input für menschliche Spieler
+
+      controller.getCurrentState() should include("GetPlayerNamesState")
+    }
+
+    "getInternalPlayerNameStateInfo returns Left when not in GetPlayerNamesState" in {
+      val controller = new GameController()
+      controller.getInternalPlayerNameStateInfo should be (Left(()))
+    }
 
     "correctly change States" in {
       val controller = new GameController()
       controller.getCurrentState() should include ("GetPlayerNumberState")
       controller.handleInput("2")
+      controller.handleInput("1")
       controller.getCurrentState() should include("GetPlayerNamesState")
       controller.handleInput("Player1")
       controller.handleInput("Player2")
@@ -155,6 +168,7 @@ class GameControllerSpec extends AnyWordSpec with Matchers {
       val controller = new GameController()
       controller.getCurrentState() should include ("GetPlayerNumberState")
       controller.handleInput("2")
+      controller.handleInput("2")
       controller.getCurrentState() should include("GetPlayerNamesState")
       controller.handleInput("Player1")
       controller.handleInput("Player2")
@@ -170,10 +184,24 @@ class GameControllerSpec extends AnyWordSpec with Matchers {
       controller.getCurrentState() should be ("GetPlayerNumberState")
     }
 
+    "stay in GameOverState when input is not 'y'" in {
+      val controller = new GameController()
+      val state = new GameOverState()
+      val nextState = state.handleInput("n", controller)
+      nextState shouldBe a [GameOverState]
+    }
+
+    "stay in GetSortStrategyState when input is invalid" in {
+      val controller = new GameController()
+      val state = new GetSortStrategyState()
+      val nextState = state.handleInput("invalid_input", controller)
+      nextState shouldBe a [GetSortStrategyState]
+    }
 
     "run a complete game with predefined inputs and sorting strat 3" in {
       val controller = new GameController()
       controller.getCurrentState() should include ("GetPlayerNumberState")
+      controller.handleInput("2")
       controller.handleInput("2")
       controller.getCurrentState() should include("GetPlayerNamesState")
       controller.handleInput("Player1")
@@ -191,13 +219,36 @@ class GameControllerSpec extends AnyWordSpec with Matchers {
 
     }
 
+    "add human player and increment currentPlayerIndex in GetPlayerNamesState" in {
+      val controller = new GameController()
+      controller.handleInput("2")      // total players
+      controller.handleInput("1")      // 1 human
+      controller.handleInput("Alice")  // triggers: currentPlayerIndex += 1
 
+      controller.getAllPlayers.exists(_.name == "Alice") should be(true)
+    }
+
+    "skip manual name input if human count is zero" in {
+      val controller = new GameController()
+      controller.handleInput("2")      // total players
+      controller.handleInput("0")      // 0 human players → skips manual input entirely
+
+      controller.getAllPlayers.forall(_.name.startsWith("Bot_")) should be(true)
+    }
+
+
+    "stay in GetPlayerNamesState on out-of-range number of human players" in {
+      val controller = new GameController()
+      controller.handleInput("4")          // Spieleranzahl 4
+      controller.handleInput("5")          // ungültige Anzahl menschlicher Spieler (> 4)
+      controller.getCurrentState() should include("GetPlayerNamesState")
+    }
 
     "run a complete game with predefined inputs and sorting strat 1" in {
-      val p1 = new Player("P1", List(Card(Rank.Ace, Suit.Hearts)))
-      val p2 = new Player("P2", List(Card(Rank.King, Suit.Hearts)))
+      val p1 = new HumanPlayer("P1", List(Card(Rank.Ace, Suit.Hearts)))
+      val p2 = new HumanPlayer("P2", List(Card(Rank.King, Suit.Hearts)))
       val game = new Game(List(p1, p2))
-      val inputs = List("a","6","2", "P1", "P2","1", "-1", "0")
+      val inputs = List("a","6","2","2", "P1", "P2","1", "-1", "0")
       var inputIndex = 0
       val testController = new GameController() {
         override protected def GetUserInput(): String = {
@@ -221,12 +272,12 @@ class GameControllerSpec extends AnyWordSpec with Matchers {
 
 
       testController.gameIsOver should be(true)
-      updates should be (60)
+      updates should be (61)
     }
 
-    "update scores for players automatically when all players have played a card" in {
-      val p1 = new Player("P1", List(Card(Rank.Ace, Suit.Hearts),Card (Rank.Two, Suit.Clubs)))
-      val p2 = new Player("P2", List(Card(Rank.King, Suit.Hearts),Card(Rank.Queen,Suit.Spades)))
+    "update scores for players based on the trick" in {
+      val p1 = new HumanPlayer("P1", List(Card(Rank.Ace, Suit.Hearts),Card (Rank.Two, Suit.Clubs)))
+      val p2 = new HumanPlayer("P2", List(Card(Rank.King, Suit.Hearts),Card(Rank.Queen,Suit.Spades)))
       val game = new Game(List(p1, p2))
       val testController = new GameController()
       testController.initializeGame(game)

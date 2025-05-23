@@ -1,5 +1,6 @@
 package de.htwg.se.Hearts.controller
 
+import scala.util.Try
 import de.htwg.se.Hearts.model.*
 import scala.collection.mutable.ListBuffer
 import scala.io.StdIn
@@ -13,11 +14,10 @@ trait GameState {
 
 class GetPlayerNumberState extends GameState {
   override def handleInput(input: String, controller: GameController): GameState = {
-    // Convert input to Option[Int], then validate the range
-    scala.util.Try(input.toInt).toOption
-      .filter(count => count >= 2 && count <= 4)
-      .map(count => new GetPlayerNamesState(count))
-      .getOrElse(this)
+    Try(input.toInt).toOption.filter(n => n >= 2 && n <= 4) match {
+      case Some(validPlayerCount) => new GetPlayerNamesState(validPlayerCount)
+      case None => this
+    }
   }
 
   override def generateStateString(controller: GameController): String = {
@@ -26,28 +26,58 @@ class GetPlayerNumberState extends GameState {
 }
 
 class GetPlayerNamesState(playerCount: Int) extends GameState {
+  private var humanCountOpt: Option[Int] = None
   private var playerNames: List[String] = List()
   private var currentPlayerIndex: Int = 0
 
-  override def handleInput(input: String, controller: GameController): GameState = {
-    playerNames = playerNames :+ input
-    currentPlayerIndex += 1
-    if (currentPlayerIndex >= playerCount) {
-      val game = Dealer.deal(Dealer.shuffle(Dealer.createDeck()), playerNames)
-      controller.initializeGame(game)
-      new GetSortStrategyState()
+    override def handleInput(input: String, controller: GameController): GameState = {
+    humanCountOpt match {
+      case None =>
+        Try(input.toInt).toOption.filter(n => n >= 0 && n <= playerCount) match {
+          case Some(validHumanCount) =>
+            humanCountOpt = Some(validHumanCount)
+          case None => return this
+        }
+        return this
 
-    } else {
-      this
+      case Some(humanCount) =>
+        if (currentPlayerIndex < humanCount) {
+          playerNames = playerNames :+ input.trim
+          currentPlayerIndex += 1
+        }
+
+        // Bot-Auffüllung danach:
+        if (currentPlayerIndex >= humanCount && currentPlayerIndex < playerCount) {
+          while (currentPlayerIndex < playerCount) {
+            playerNames = playerNames :+ s"Bot_${currentPlayerIndex - humanCount + 1}"
+            currentPlayerIndex += 1
+          }
+        }
+
+        if (currentPlayerIndex >= playerCount) {
+          val deck = Dealer.shuffle(Dealer.createDeck())
+          val game = Dealer.deal(deck, playerNames)
+          controller.initializeGame(game)
+          new GetSortStrategyState()
+        } else {
+          this
+        }
     }
   }
 
+  def getInternalState: Either[Unit, (Int, Int)] = {
+    humanCountOpt match {
+      case None => Left(())
+      case Some(humanCount) => Right((currentPlayerIndex, humanCount))
+    }
+  }
 
   override def generateStateString(controller: GameController): String = {
     "GetPlayerNamesState"
   }
 }
 
+// State for the main gameplay
 class GamePlayState extends GameState {
   override def handleInput(input: String, controller: GameController): GameState = {
     input.trim.toLowerCase match {

@@ -4,6 +4,7 @@ import de.htwg.se.Hearts.model.*
 import scala.collection.mutable.ListBuffer
 import scala.io.StdIn
 import scala.compiletime.uninitialized
+import scala.util.Try
 
 class GameController extends Observable {
   private var game: Game = uninitialized
@@ -110,7 +111,7 @@ class GameController extends Observable {
 
       if (result) {
         redoStack.remove(0)
-        commandHistory += commandToRedo  
+        commandHistory += commandToRedo
       }
 
       result
@@ -153,6 +154,15 @@ class GameController extends Observable {
     currentState = currentState.handleInput(input, this)
     notifyObservers()
   }
+
+  def getInternalPlayerNameStateInfo: Either[Unit, (Int, Int)] = {
+  currentState match {
+    case s: GetPlayerNamesState =>
+      s.getInternalState
+    case _ => Left(())
+  }
+}
+
 
   def parseCardIndex(input: String): Int = {
     val sortedHand = getSortedHand
