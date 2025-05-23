@@ -137,4 +137,5 @@ class CommandSpec extends AnyWordSpec with Matchers {
       command.redo() should be (false)
     }
   }
+  
 }
