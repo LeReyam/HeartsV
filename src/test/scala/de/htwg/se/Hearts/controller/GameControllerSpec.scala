@@ -313,8 +313,8 @@ class GameControllerSpec extends AnyWordSpec with Matchers {
     }
 
     "support undo and redo of card plays" in {
-      val p1 = new Player("P1", List(Card(Rank.Ace, Suit.Hearts), Card(Rank.Two, Suit.Clubs)))
-      val p2 = new Player("P2", List(Card(Rank.King, Suit.Hearts), Card(Rank.Queen, Suit.Spades)))
+      val p1 = new HumanPlayer("P1", List(Card(Rank.Ace, Suit.Hearts), Card(Rank.Two, Suit.Clubs)))
+      val p2 = new HumanPlayer("P2", List(Card(Rank.King, Suit.Hearts), Card(Rank.Queen, Suit.Spades)))
       val game = new Game(List(p1, p2))
       val testController = new GameController()
       testController.initializeGame(game)

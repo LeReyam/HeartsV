@@ -8,11 +8,11 @@ import scala.collection.mutable.ListBuffer
 class CommandSpec extends AnyWordSpec with Matchers {
 
   "A PlayCardCommand" should {
-    val player1 = new Player("Player 1", List(
+    val player1 = new HumanPlayer("Player 1", List(
       Card(Rank.Ace, Suit.Hearts),
       Card(Rank.King, Suit.Clubs)
     ))
-    val player2 = new Player("Player 2", List(
+    val player2 = new HumanPlayer("Player 2", List(
       Card(Rank.Queen, Suit.Diamonds),
       Card(Rank.Jack, Suit.Spades)
     ))
@@ -79,8 +79,8 @@ class CommandSpec extends AnyWordSpec with Matchers {
 
     "handle scoring when all players have played a card" in {
       // Reset the game
-      val p1 = new Player("P1", List(Card(Rank.Ace, Suit.Hearts), Card(Rank.Two, Suit.Clubs)))
-      val p2 = new Player("P2", List(Card(Rank.King, Suit.Hearts), Card(Rank.Queen, Suit.Spades)))
+      val p1 = new HumanPlayer("P1", List(Card(Rank.Ace, Suit.Hearts), Card(Rank.Two, Suit.Clubs)))
+      val p2 = new HumanPlayer("P2", List(Card(Rank.King, Suit.Hearts), Card(Rank.Queen, Suit.Spades)))
       val newGame = new Game(List(p1, p2))
       val newController = new GameController()
       newController.initializeGame(newGame)

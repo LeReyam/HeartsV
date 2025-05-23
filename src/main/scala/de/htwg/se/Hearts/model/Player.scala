@@ -6,6 +6,7 @@ trait Player {
   def hand: List[Card]
   var points: Int
   def removeCard(card: Card): Unit
+  def addCard(card: Card): Unit
 }
 
 class HumanPlayer(val name: String, private var _hand: List[Card]) extends Player {
@@ -24,4 +25,8 @@ case class BotPlayer(val name: String, private var _hand: List[Card]) extends Pl
   var points: Int = 0
   def hand: List[Card] = _hand
   def removeCard(card: Card): Unit = _hand = _hand.filterNot(_ == card)
+
+    def addCard(card: Card): Unit = {
+    _hand = _hand :+ card
+  }
 }
