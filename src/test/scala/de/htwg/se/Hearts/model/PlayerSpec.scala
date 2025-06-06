@@ -61,5 +61,13 @@ class PlayerSpec extends AnyWordSpec with Matchers {
       bot.name should be("Bot_1")
       bot.hand should contain only Card(Rank.Seven, Suit.Spades)
     }
+    "add a card correctly using addCard" in {
+      val bot = BotPlayer("Bot_1", List(Card(Rank.Five, Suit.Spades)))
+
+      bot.hand.size should be(1)
+      bot.addCard(Card(Rank.Ten, Suit.Hearts))
+      bot.hand.size should be(2)
+      bot.hand should contain(Card(Rank.Ten, Suit.Hearts))
+    }
   }
 }
