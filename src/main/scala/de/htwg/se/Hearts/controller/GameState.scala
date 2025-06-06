@@ -1,6 +1,6 @@
 package de.htwg.se.Hearts.controller
 
-import scala.util.Try
+import scala.util.{Try, Success, Failure}
 import de.htwg.se.Hearts.model.*
 import scala.collection.mutable.ListBuffer
 import scala.io.StdIn
@@ -77,7 +77,6 @@ class GetPlayerNamesState(playerCount: Int) extends GameState {
   }
 }
 
-// State for the main gameplay
 class GamePlayState extends GameState {
   override def handleInput(input: String, controller: GameController): GameState = {
     input.trim.toLowerCase match {
@@ -94,17 +93,16 @@ class GamePlayState extends GameState {
           this
         }
       case _ =>
-        val cardIndex = controller.parseCardIndex(input)
-
-        if (cardIndex >= 0) {
-          controller.playCard(cardIndex)
-          if (controller.gameIsOver) {
-            new GameOverState()
-          } else {
+        controller.parseCardIndex(input) match {
+          case Success(index) =>
+            controller.playCard(index)
+            if (controller.gameIsOver) {
+              new GameOverState()
+            } else {
+              this
+            }
+          case Failure(exception) =>
             this
-          }
-        } else {
-          this
         }
     }
   }
@@ -139,14 +137,11 @@ class GetSortStrategyState extends GameState {
 
 }
 
-// State for game over
 class GameOverState extends GameState {
   override def handleInput(input: String, controller: GameController): GameState = {
-    // Any input in game over state starts a new game
     if (input.trim.toLowerCase == "y") {
       new GetPlayerNumberState()
     } else {
-      // Exit the game or stay in this state
       this
     }
   }

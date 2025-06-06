@@ -4,6 +4,7 @@ import org.scalatest.wordspec.AnyWordSpec
 import org.scalatest.matchers.should.Matchers
 import de.htwg.se.Hearts.model.*
 import scala.collection.mutable.ListBuffer
+import scala.util.{Try, Success, Failure}
 
 class GameControllerSpec extends AnyWordSpec with Matchers {
 
@@ -59,19 +60,32 @@ class GameControllerSpec extends AnyWordSpec with Matchers {
     }
 
     "test if index of card is valid" in {
-      controller.parseCardIndex("0") should be(0)
+      controller.parseCardIndex("0").isSuccess should be(true)
+      controller.parseCardIndex("0").get should be(0)
     }
 
     "handle invalid card index" in {
-      controller.parseCardIndex("3") should be(-1)
+      controller.parseCardIndex("3").isFailure should be(true)
+      controller.parseCardIndex("3") match {
+        case Failure(e) => e shouldBe a[IndexOutOfBoundsException]
+        case _ => fail("Expected Failure with IndexOutOfBoundsException")
+      }
     }
 
     "handle non-numeric input" in {
-      controller.parseCardIndex("a") should be(-1)
+      controller.parseCardIndex("a").isFailure should be(true)
+      controller.parseCardIndex("a") match {
+        case Failure(e) => e shouldBe a[NumberFormatException]
+        case _ => fail("Expected Failure with NumberFormatException")
+      }
     }
 
     "handle empty input" in {
-      controller.parseCardIndex("") should be(-1)
+      controller.parseCardIndex("").isFailure should be(true)
+      controller.parseCardIndex("") match {
+        case Failure(e) => e shouldBe a[NumberFormatException]
+        case _ => fail("Expected Failure with NumberFormatException")
+      }
     }
 
     "correctly detect game over when all players have no cards" in {
@@ -118,8 +132,8 @@ class GameControllerSpec extends AnyWordSpec with Matchers {
 
     "handle invalid human player input and stay in GetPlayerNamesState" in {
       val controller = new GameController()
-      controller.handleInput("3")         // Gesamtspielerzahl
-      controller.handleInput("abc")       // Ungültiger Input für menschliche Spieler
+      controller.handleInput("3")
+      controller.handleInput("abc")
 
       controller.getCurrentState() should include("GetPlayerNamesState")
     }
@@ -221,17 +235,17 @@ class GameControllerSpec extends AnyWordSpec with Matchers {
 
     "add human player and increment currentPlayerIndex in GetPlayerNamesState" in {
       val controller = new GameController()
-      controller.handleInput("2")      // total players
-      controller.handleInput("1")      // 1 human
-      controller.handleInput("Alice")  // triggers: currentPlayerIndex += 1
+      controller.handleInput("2")
+      controller.handleInput("1")
+      controller.handleInput("Alice")
 
       controller.getAllPlayers.exists(_.name == "Alice") should be(true)
     }
 
     "skip manual name input if human count is zero" in {
       val controller = new GameController()
-      controller.handleInput("2")      // total players
-      controller.handleInput("0")      // 0 human players → skips manual input entirely
+      controller.handleInput("2")
+      controller.handleInput("0")
 
       controller.getAllPlayers.forall(_.name.startsWith("Bot_")) should be(true)
     }
@@ -239,8 +253,8 @@ class GameControllerSpec extends AnyWordSpec with Matchers {
 
     "stay in GetPlayerNamesState on out-of-range number of human players" in {
       val controller = new GameController()
-      controller.handleInput("4")          // Spieleranzahl 4
-      controller.handleInput("5")          // ungültige Anzahl menschlicher Spieler (> 4)
+      controller.handleInput("4")
+      controller.handleInput("5")
       controller.getCurrentState() should include("GetPlayerNamesState")
     }
 
@@ -282,32 +296,27 @@ class GameControllerSpec extends AnyWordSpec with Matchers {
       val testController = new GameController()
       testController.initializeGame(game)
 
-      // First player plays a card
+
       testController.playCard(0) should be(true)
-      // Pot should have one card
+
       testController.getCurrentPot.size should be(1)
-      // No scoring yet
+
       testController.getPlayerPoints(0) should be (0)
       testController.getPlayerPoints(1) should be (0)
 
-      // Second player plays a card, which should trigger scoring
+
       testController.playCard(0) should be(true)
-      // Pot should be empty after scoring
+
       testController.getCurrentPot shouldBe empty
-      // Player 1 should have 2 points (Ace of Hearts)
+
       testController.getPlayerPoints(0) should be (2)
       testController.getPlayerPoints(1) should be (0)
 
-      // First player plays another card
       testController.playCard(0) should be(true)
-      // Pot should have one card
       testController.getCurrentPot.size should be(1)
 
-      // Second player plays another card, which should trigger scoring
       testController.playCard(0) should be(true)
-      // Pot should be empty after scoring
       testController.getCurrentPot shouldBe empty
-      // Player 1 should now have 15 points (2 + 13 for Queen of Spades)
       testController.getPlayerPoints(0) should be (15)
       testController.getPlayerPoints(1) should be (0)
     }
@@ -319,50 +328,50 @@ class GameControllerSpec extends AnyWordSpec with Matchers {
       val testController = new GameController()
       testController.initializeGame(game)
 
-      // Initial state
+
       testController.getCurrentPlayerName should be("P1")
       testController.getCurrentPlayerHand.size should be(2)
       testController.getCurrentPot.size should be(0)
 
-      // Play a card
+
       testController.playCard(0) should be(true)
       testController.getCurrentPlayerName should be("P2")
       testController.getCurrentPot.size should be(1)
       testController.getCurrentPot.head should be(Card(Rank.Ace, Suit.Hearts))
       p1.hand.size should be(1)
 
-      // Undo the play
+
       testController.undoLastCard() should be(true)
       testController.getCurrentPlayerName should be("P1")
       testController.getCurrentPot.size should be(0)
       p1.hand.size should be(2)
       p1.hand should contain(Card(Rank.Ace, Suit.Hearts))
 
-      // Redo the play
+
       testController.redoLastCard() should be(true)
       testController.getCurrentPlayerName should be("P2")
       testController.getCurrentPot.size should be(1)
       testController.getCurrentPot.head should be(Card(Rank.Ace, Suit.Hearts))
       p1.hand.size should be(1)
 
-      // Play another card to complete the trick
-      testController.playCard(0) should be(true)
-      testController.getCurrentPot.size should be(0) // Pot is cleared after scoring
-      testController.getPlayerPoints(0) should be(2) // P1 gets 2 points for Ace of Hearts
 
-      // Undo the second play (which includes undoing the scoring)
+      testController.playCard(0) should be(true)
+      testController.getCurrentPot.size should be(0)
+      testController.getPlayerPoints(0) should be(2)
+
+
       testController.undoLastCard() should be(true)
       testController.getCurrentPlayerName should be("P2")
       testController.getCurrentPot.size should be(1)
       testController.getCurrentPot.head should be(Card(Rank.Ace, Suit.Hearts))
-      testController.getPlayerPoints(0) should be(0) // Points should be back to 0
+      testController.getPlayerPoints(0) should be(0)
       p2.hand.size should be(2)
       p2.hand should contain(Card(Rank.King, Suit.Hearts))
 
-      // Redo the second play (which includes redoing the scoring)
+
       testController.redoLastCard() should be(true)
-      testController.getCurrentPot.size should be(0) // Pot is cleared after scoring
-      testController.getPlayerPoints(0) should be(2) // P1 gets 2 points for Ace of Hearts
+      testController.getCurrentPot.size should be(0)
+      testController.getPlayerPoints(0) should be(2)
       p2.hand.size should be(1)
     }
   }

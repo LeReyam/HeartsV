@@ -4,7 +4,7 @@ import de.htwg.se.Hearts.model.*
 import scala.collection.mutable.ListBuffer
 import scala.io.StdIn
 import scala.compiletime.uninitialized
-import scala.util.Try
+import scala.util.{Try, Success, Failure}
 
 class GameController extends Observable {
   private var game: Game = uninitialized
@@ -164,12 +164,22 @@ class GameController extends Observable {
 }
 
 
-  def parseCardIndex(input: String): Int = {
+  private var lastCardIndexTry: Try[Int] = Try(0)
+
+  def parseCardIndex(input: String): Try[Int] = {
     val sortedHand = getSortedHand
     val handSize = sortedHand.length
-    scala.util.Try(input.toInt).toOption
-      .filter(index => index >= 0 && index < handSize)
-      .getOrElse(-1)
+
+    lastCardIndexTry = Try(input.toInt).flatMap { index =>
+      if (index >= 0 && index < handSize) {
+        Success(index)
+      } else {
+        Failure(new IndexOutOfBoundsException(s"Index $index is out of bounds for hand size $handSize"))
+      }
+    }
+    lastCardIndexTry
   }
+
+  def getLastCardIndexTry: Try[Int] = lastCardIndexTry
 
 }

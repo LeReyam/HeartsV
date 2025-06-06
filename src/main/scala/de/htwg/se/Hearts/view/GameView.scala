@@ -2,6 +2,7 @@ package de.htwg.se.Hearts.view
 import de.htwg.se.Hearts.controller.*
 import de.htwg.se.Hearts.model.*
 import scala.collection.mutable.ListBuffer
+import scala.util.{Try, Success, Failure}
 
 class GameView(controller: GameController) extends Observer {
   controller.addObserver(this)
@@ -70,18 +71,14 @@ class GameView(controller: GameController) extends Observer {
 
     sb.append(headerBuilder.toString())
 
-    // Find the longest player name to determine fixed width
     val maxNameLength = controller.getAllPlayers.map(_.name.length).maxOption.getOrElse(0) + 3
 
 
-    // Get all players and their indices
     val playersWithIndices = controller.getAllPlayers.zipWithIndex
 
     playersWithIndices.foreach { case (player, index) =>
-      // Get sorted hand for each player using the new method
       val sortedHand = controller.getSortedHandForPlayer(index)
 
-      // Format the sorted hand for display
       val handStr = sortedHand.map { card =>
         val cardStr = s"${card.rank.toString}${card.suit.toString}"
         f"$cardStr%-3s"
@@ -102,6 +99,17 @@ class GameView(controller: GameController) extends Observer {
       f"$cardStr%-3s"
     }.mkString(" | ")
     sb.append(s"| $potStr |\n")
+
+    controller.getLastCardIndexTry match {
+      case Failure(e: NumberFormatException) =>
+        sb.append("\nError: Please enter a valid number.\n")
+      case Failure(e: IndexOutOfBoundsException) =>
+        sb.append(s"\nError: Please enter a number between 0 and ${currentPlayerHand.length -1}\n")
+      case Failure(e) =>
+        sb.append(s"\nError: ${e.getMessage}\n")
+      case Success(_) =>
+    }
+
     sb.append(separator).append(s"\n${controller.getCurrentPlayerName}, which card do you want to play? (Enter the index): \n")
 
     sb.toString
