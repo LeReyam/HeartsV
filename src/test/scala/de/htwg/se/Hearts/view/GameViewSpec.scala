@@ -47,7 +47,7 @@ class GameViewSpec extends AnyWordSpec with Matchers {
       output2 should include("Error: Please enter a valid number.")
       controller.handleInput("27")
       val output3 = view.generateOutputStringGamePlayState(controller)
-      output3 should include("Error: Please enter a number between 0 and")
+      output3 should include("Error: Index 27 is out of bounds for hand size 26 Please enter a number between 0 and 25")
     }
 
     "render game over with correct scores" in {

@@ -104,7 +104,7 @@ class GameView(controller: GameController) extends Observer {
       case Failure(e: NumberFormatException) =>
         sb.append("\nError: Please enter a valid number.\n")
       case Failure(e: IndexOutOfBoundsException) =>
-        sb.append(s"\nError: Please enter a number between 0 and ${currentPlayerHand.length -1}\n")
+        sb.append(s"\nError: ${e.getMessage} Please enter a number between 0 and ${currentPlayerHand.length -1}\n")
       case Failure(e) =>
         sb.append(s"\nError: ${e.getMessage}\n")
       case Success(_) =>
