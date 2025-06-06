@@ -36,11 +36,18 @@ class GameViewSpec extends AnyWordSpec with Matchers {
       controller.handleInput("2")
       controller.handleInput("P1")
       controller.handleInput("P2")
-      controller.handleInput("1") // Sortierungsstrategie
+      controller.handleInput("1")
       val output = view.generateOutputStringGamePlayState(controller)
       output should include("Current Pot:")
       output should include("P1")
       output should include("P2")
+      controller.handleInput("0")
+      controller.handleInput("a")
+      val output2 = view.generateOutputStringGamePlayState(controller)
+      output2 should include("Error: Please enter a valid number.")
+      controller.handleInput("27")
+      val output3 = view.generateOutputStringGamePlayState(controller)
+      output3 should include("Error: Please enter a number between 0 and")
     }
 
     "render game over with correct scores" in {
