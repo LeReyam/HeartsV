@@ -27,6 +27,14 @@ class GameView(controller: GameController) extends Observer {
 
     sb.append(separator).append("\n")
     sb.append("HEARTS GAME SETUP\n")
+    controller.getLastPlayerCountTry match{
+      case Failure(e: IndexOutOfBoundsException) =>
+        sb.append(s"Error: ${e.getMessage}\n")
+      case Failure(e: NumberFormatException) =>
+        sb.append("Please enter a Number")
+      case Failure(e) => (s"Error: ${e.getMessage}\n")
+      case Success(value) =>
+    }
     sb.append(separator).append("\n\n")
     sb.append("Enter the number of players (2-4): ")
 
@@ -36,7 +44,7 @@ class GameView(controller: GameController) extends Observer {
   def generateOutputStringGetPlayerNamesState(controller: GameController): String = {
   val separator = "=" * 80
   val header = "HEARTS GAME SETUP"
-  val state = controller.getInternalPlayerNameStateInfo  // <- eigene neue Methode
+  val state = controller.getInternalPlayerNameStateInfo
 
   val prompt = state match {
     case Left(_) => "Wie viele menschliche Spieler?"

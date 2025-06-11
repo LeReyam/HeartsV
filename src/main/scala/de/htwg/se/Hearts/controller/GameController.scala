@@ -165,6 +165,8 @@ class GameController extends Observable {
 
 
   private var lastCardIndexTry: Try[Int] = Try(0)
+  private var lastPlayerCountTry: Try[Int] = Try(0)
+  private var lastHumanCountTry: Try[Int] = Try(0)
 
   def parseCardIndex(input: String): Try[Int] = {
     val sortedHand = getSortedHand
@@ -180,6 +182,30 @@ class GameController extends Observable {
     lastCardIndexTry
   }
 
+  def parsePlayerCount(input: String): Try[Int] = {
+    lastPlayerCountTry = Try(input.toInt).flatMap { count =>
+      if (count >= 2 && count <= 4) {
+        Success(count)
+      } else {
+        Failure(new IndexOutOfBoundsException(s"Player count $count is out of bounds (must be between 2 and 4)"))
+      }
+    }
+    lastPlayerCountTry
+  }
+
+  def parseHumanCount(input: String, maxPlayers: Int): Try[Int] = {
+    lastHumanCountTry = Try(input.toInt).flatMap { count =>
+      if (count >= 0 && count <= maxPlayers) {
+        Success(count)
+      } else {
+        Failure(new IndexOutOfBoundsException(s"Human count $count is out of bounds (must be between 0 and $maxPlayers)"))
+      }
+    }
+    lastHumanCountTry
+  }
+
   def getLastCardIndexTry: Try[Int] = lastCardIndexTry
+  def getLastPlayerCountTry: Try[Int] = lastPlayerCountTry
+  def getLastHumanCountTry: Try[Int] = lastHumanCountTry
 
 }

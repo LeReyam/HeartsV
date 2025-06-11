@@ -14,9 +14,9 @@ trait GameState {
 
 class GetPlayerNumberState extends GameState {
   override def handleInput(input: String, controller: GameController): GameState = {
-    Try(input.toInt).toOption.filter(n => n >= 2 && n <= 4) match {
-      case Some(validPlayerCount) => new GetPlayerNamesState(validPlayerCount)
-      case None => this
+    controller.parsePlayerCount(input) match {
+      case Success(validPlayerCount) => new GetPlayerNamesState(validPlayerCount)
+      case Failure(_) => this
     }
   }
 
@@ -33,10 +33,10 @@ class GetPlayerNamesState(playerCount: Int) extends GameState {
     override def handleInput(input: String, controller: GameController): GameState = {
     humanCountOpt match {
       case None =>
-        Try(input.toInt).toOption.filter(n => n >= 0 && n <= playerCount) match {
-          case Some(validHumanCount) =>
+        controller.parseHumanCount(input, playerCount) match {
+          case Success(validHumanCount) =>
             humanCountOpt = Some(validHumanCount)
-          case None => return this
+          case Failure(_) => return this
         }
         return this
 
@@ -108,10 +108,7 @@ class GamePlayState extends GameState {
   }
 
   override def generateStateString(controller: GameController): String = {
-    val stateString = new StringBuilder("GamePlayState\n")
-    stateString.append("Type 'undo' to take back your last move\n")
-    stateString.append("Type 'redo' to redo an undone move\n")
-    stateString.toString
+    "GamePlayState"
   }
 }
 class GetSortStrategyState extends GameState {
