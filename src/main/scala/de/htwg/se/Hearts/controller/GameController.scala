@@ -195,7 +195,7 @@ class GameController extends Observable {
 
   def parseHumanCount(input: String, maxPlayers: Int): Try[Int] = {
     lastHumanCountTry = Try(input.toInt).flatMap { count =>
-      if (count >= 0 && count <= maxPlayers) {
+      if (count > 0 && count <= maxPlayers) {
         Success(count)
       } else {
         Failure(new IndexOutOfBoundsException(s"Human count $count is out of bounds (must be between 0 and $maxPlayers)"))
