@@ -198,7 +198,7 @@ class GameController extends Observable {
       if (count > 0 && count <= maxPlayers) {
         Success(count)
       } else {
-        Failure(new IndexOutOfBoundsException(s"Human count $count is out of bounds (must be between 0 and $maxPlayers)"))
+        Failure(new IndexOutOfBoundsException(s"Human count $count is out of bounds (must be between 1 and $maxPlayers)"))
       }
     }
     lastHumanCountTry
