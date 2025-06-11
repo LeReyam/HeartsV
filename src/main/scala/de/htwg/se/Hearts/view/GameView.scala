@@ -11,6 +11,8 @@ class GameView(controller: GameController) extends Observer {
     val state = controller.getCurrentState()
     if (state.startsWith("GetPlayerNumberState")) {
       println(generateOutputStringGetPlayerNumberState(controller))
+    } else if (state.startsWith("GetHumanPlayerCountState")) {
+      println(generateOutputStringGetHumanPlayerCountState(controller))
     } else if (state.startsWith("GetPlayerNamesState")) {
       println(generateOutputStringGetPlayerNamesState(controller))
     } else if (state.startsWith("GamePlayState")) {
@@ -41,22 +43,43 @@ class GameView(controller: GameController) extends Observer {
     sb.toString
   }
 
-  def generateOutputStringGetPlayerNamesState(controller: GameController): String = {
-  val separator = "=" * 80
-  val header = "HEARTS GAME SETUP"
-  val state = controller.getInternalPlayerNameStateInfo
+  def generateOutputStringGetHumanPlayerCountState(controller: GameController): String = {
+    val sb = new StringBuilder
+    val separator = "=" * 80
 
-  val prompt = state match {
-    case Left(_) => "Wie viele menschliche Spieler?"
-    case Right((index, _)) =>
-      s"Gib den Namen für Spieler ${index + 1} ein:"
+    sb.append(separator).append("\n")
+    sb.append("HEARTS GAME SETUP\n")
+    controller.getLastHumanCountTry match {
+      case Failure(e: IndexOutOfBoundsException) =>
+        sb.append(s"Error: ${e.getMessage}\n")
+      case Failure(e: NumberFormatException) =>
+        sb.append("Please enter a Number\n")
+      case Failure(e) =>
+        sb.append(s"Error: ${e.getMessage}\n")
+      case Success(_) =>
+    }
+    sb.append(separator).append("\n\n")
+    sb.append("Wie viele menschliche Spieler? ")
+
+    sb.toString
   }
 
-  separator + "\n" +
-  header + "\n" +
-  separator + "\n\n" +
-  prompt
-}
+  def generateOutputStringGetPlayerNamesState(controller: GameController): String = {
+    val separator = "=" * 80
+    val header = "HEARTS GAME SETUP"
+    val state = controller.getInternalPlayerNameStateInfo
+
+    val prompt = state match {
+      case Left(_) => "Error: Invalid state"
+      case Right((index, _)) =>
+        s"Gib den Namen für Spieler ${index + 1} ein:"
+    }
+
+    separator + "\n" +
+    header + "\n" +
+    separator + "\n\n" +
+    prompt
+  }
 
 
 

@@ -130,12 +130,12 @@ class GameControllerSpec extends AnyWordSpec with Matchers {
       testController.gameIsOver should be(true)
     }
 
-    "handle invalid human player input and stay in GetPlayerNamesState" in {
+    "handle invalid human player input and stay in GetHumanPlayerCountState" in {
       val controller = new GameController()
       controller.handleInput("3")
       controller.handleInput("abc")
 
-      controller.getCurrentState() should include("GetPlayerNamesState")
+      controller.getCurrentState() should include("GetHumanPlayerCountState")
     }
 
     "getInternalPlayerNameStateInfo returns Left when not in GetPlayerNamesState" in {
@@ -251,11 +251,11 @@ class GameControllerSpec extends AnyWordSpec with Matchers {
     }
 
 
-    "stay in GetPlayerNamesState on out-of-range number of human players" in {
+    "stay in GetHumanPlayerCountState on out-of-range number of human players" in {
       val controller = new GameController()
       controller.handleInput("4")
       controller.handleInput("5")
-      controller.getCurrentState() should include("GetPlayerNamesState")
+      controller.getCurrentState() should include("GetHumanPlayerCountState")
     }
 
     "run a complete game with predefined inputs and sorting strat 1" in {

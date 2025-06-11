@@ -158,7 +158,7 @@ class GameController extends Observable {
   def getInternalPlayerNameStateInfo: Either[Unit, (Int, Int)] = {
   currentState match {
     case s: GetPlayerNamesState =>
-      s.getInternalState
+      Right(s.getInternalState)
     case _ => Left(())
   }
 }
