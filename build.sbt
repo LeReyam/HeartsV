@@ -1,5 +1,9 @@
 val scala3Version = "3.6.4"
 
+
+lazy val core = project.in(file("core"))
+lazy val gui = project.in(file("gui")).dependsOn(core)
+
 lazy val root = project
   .in(file("."))
   .enablePlugins(CoverallsPlugin)
