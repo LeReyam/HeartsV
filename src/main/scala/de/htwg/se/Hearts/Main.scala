@@ -7,6 +7,10 @@ import scalafx.scene.Scene
 
 object Main extends JFXApp3 {
 
+
+
+  
+
   override def start(): Unit = {
     val controller = new GameController()
     val gui = new Gui(controller)
