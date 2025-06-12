@@ -6,7 +6,8 @@ import scala.util.{Try, Success, Failure}
 
 class GameView(controller: GameController) extends Observer {
   controller.addObserver(this)
-
+  val separator = "=" * 80 + "\n"
+  val header = "HEARTS GAME SETUP\n"
   override def update(): Unit = {
     val state = controller.getCurrentState()
     if (state.startsWith("GetPlayerNumberState")) {
@@ -23,50 +24,48 @@ class GameView(controller: GameController) extends Observer {
       println(generateOutputStringGetSortStrategyState(controller))
     }
   }
+
   def generateOutputStringGetPlayerNumberState(controller: GameController): String = {
-    val sb = new StringBuilder
-    val separator = "=" * 80
+    var output = ""
+    output += separator
+    output += header
 
-    sb.append(separator).append("\n")
-    sb.append("HEARTS GAME SETUP\n")
-    controller.getLastPlayerCountTry match{
-      case Failure(e: IndexOutOfBoundsException) =>
-        sb.append(s"Error: ${e.getMessage}\n")
-      case Failure(e: NumberFormatException) =>
-        sb.append("Please enter a Number")
-      case Failure(e) => (s"Error: ${e.getMessage}\n")
-      case Success(value) =>
+    controller.getLastPlayerCountTry match {
+      case Failure(_: IndexOutOfBoundsException) =>
+        output += "Error: Spieleranzahl außerhalb des gültigen Bereichs\n"
+      case Failure(_: NumberFormatException) =>
+        output += "Please enter a Number\n"
+      case Failure(e) =>
+        output += s"Error: ${e.getMessage}\n"
+      case Success(_) =>
     }
-    sb.append(separator).append("\n\n")
-    sb.append("Enter the number of players (2-4): ")
 
-    sb.toString
+    output += separator + "\n"
+    output += "Enter the number of players (2-4): "
+    output
   }
 
   def generateOutputStringGetHumanPlayerCountState(controller: GameController): String = {
-    val sb = new StringBuilder
-    val separator = "=" * 80
+    var output = ""
+    output += separator
+    output += header
 
-    sb.append(separator).append("\n")
-    sb.append("HEARTS GAME SETUP\n")
     controller.getLastHumanCountTry match {
-      case Failure(e: IndexOutOfBoundsException) =>
-        sb.append(s"Error: ${e.getMessage}\n")
-      case Failure(e: NumberFormatException) =>
-        sb.append("Please enter a Number\n")
+      case Failure(_: IndexOutOfBoundsException) =>
+        output += "Error: Ungültige Spieleranzahl\n"
+      case Failure(_: NumberFormatException) =>
+        output += "Please enter a Number\n"
       case Failure(e) =>
-        sb.append(s"Error: ${e.getMessage}\n")
+        output += s"Error: ${e.getMessage}\n"
       case Success(_) =>
     }
-    sb.append(separator).append("\n\n")
-    sb.append("Wie viele menschliche Spieler? ")
 
-    sb.toString
+    output += separator + "\n"
+    output += "Wie viele menschliche Spieler? "
+    output
   }
 
   def generateOutputStringGetPlayerNamesState(controller: GameController): String = {
-    val separator = "=" * 80
-    val header = "HEARTS GAME SETUP"
     val state = controller.getInternalPlayerNameStateInfo
 
     val prompt = state match {
@@ -75,81 +74,76 @@ class GameView(controller: GameController) extends Observer {
         s"Gib den Namen für Spieler ${index + 1} ein:"
     }
 
+    separator +
+    header +
     separator + "\n" +
-    header + "\n" +
-    separator + "\n\n" +
     prompt
   }
 
-
-
   def generateOutputStringGamePlayState(controller: GameController): String = {
-    val sb = new StringBuilder
+  val separator = "=" * 150 + "\n"
 
-    val separator = "=" * 150
-    sb.append(separator).append("\n")
-    sb.append(s"Current Player: ${controller.getCurrentPlayerName}\n")
-    sb.append(separator).append("\n\n")
+  var output = ""
+  output += separator
+  output += s"Current Player: ${controller.getCurrentPlayerName}\n"
+  output += separator + "\n\n"
 
-    val currentPlayerHand = controller.getSortedHand
+  val currentPlayerHand = controller.getSortedHand
 
-    val headerBuilder = new StringBuilder("\t")
-    headerBuilder.append("|Pts:")
-    for (i <- 0 until currentPlayerHand.length) {
-      headerBuilder.append(f"| $i%-2d ")
-    }
-    headerBuilder.append("|\n")
+  val header =
+    "\t|Pts:" +
+      currentPlayerHand.indices.map(i => f"| $i%-2d ").mkString("") +
+      "|\n"
 
-    sb.append(headerBuilder.toString())
+  output += header
 
-    val maxNameLength = controller.getAllPlayers.map(_.name.length).maxOption.getOrElse(0) + 3
+  val maxNameLength = controller.getAllPlayers.map(_.name.length).maxOption.getOrElse(0) + 3
+  val playersWithIndices = controller.getAllPlayers.zipWithIndex
 
+  playersWithIndices.foreach { case (player, index) =>
+    val sortedHand = controller.getSortedHandForPlayer(index)
 
-    val playersWithIndices = controller.getAllPlayers.zipWithIndex
-
-    playersWithIndices.foreach { case (player, index) =>
-      val sortedHand = controller.getSortedHandForPlayer(index)
-
-      val handStr = sortedHand.map { card =>
-        val cardStr = s"${card.rank.toString}${card.suit.toString}"
-        f"$cardStr%-3s"
-      }.mkString("| ")
-
-      val currentMarker = if (player.name == controller.getCurrentPlayerName) " *" else "   "
-      val nameWithMarker = s"${player.name}${currentMarker}"
-      val points = f"| ${player.points}%-2d |"
-      sb.append(s"${nameWithMarker.padTo(maxNameLength, ' ')}$points $handStr|\n")
-    }
-    sb.append("\n")
-
-    sb.append("Current Pot:\n")
-    val potStr = if (controller.getCurrentPot.isEmpty)
-      "Empty"
-    else controller.getCurrentPot.map { card =>
+    val handStr = sortedHand.map { card =>
       val cardStr = s"${card.rank.toString}${card.suit.toString}"
       f"$cardStr%-3s"
-    }.mkString(" | ")
-    sb.append(s"| $potStr |\n")
+    }.mkString("| ")
 
-    controller.getLastCardIndexTry match {
-      case Failure(e: NumberFormatException) =>
-        sb.append("\nError: Please enter a valid number.\n")
-      case Failure(e: IndexOutOfBoundsException) =>
-        sb.append(s"\nError: ${e.getMessage} Please enter a number between 0 and ${currentPlayerHand.length -1}\n")
-      case Failure(e) =>
-        sb.append(s"\nError: ${e.getMessage}\n")
-      case Success(_) =>
-    }
-
-    sb.append(separator).append(s"\n${controller.getCurrentPlayerName}, which card do you want to play? (Enter the index): \n")
-
-    sb.toString
+    val currentMarker = if (player.name == controller.getCurrentPlayerName) " *" else "   "
+    val nameWithMarker = s"${player.name}$currentMarker"
+    val points = f"| ${player.points}%-2d |"
+    output += s"${nameWithMarker.padTo(maxNameLength, ' ')}$points $handStr|\n"
   }
+
+  output += "\n"
+
+  output += "Current Pot:\n"
+  val potStr = if (controller.getCurrentPot.isEmpty)
+    "Empty"
+  else controller.getCurrentPot.map { card =>
+    val cardStr = s"${card.rank.toString}${card.suit.toString}"
+    f"$cardStr%-3s"
+  }.mkString(" | ")
+  output += s"| $potStr |\n"
+
+  controller.getLastCardIndexTry match {
+    case Failure(e: NumberFormatException) =>
+      output += "\nError: Please enter a valid number.\n"
+    case Failure(e: IndexOutOfBoundsException) =>
+      output += s"\nError: ${e.getMessage} Please enter a number between 0 and ${currentPlayerHand.length -1}\n"
+    case Failure(e) =>
+      output += s"\nError: ${e.getMessage}\n"
+    case Success(_) =>
+  }
+
+  output += separator
+  output += s"${controller.getCurrentPlayerName}, which card do you want to play? (Enter the index): \n"
+
+  output
+}
 
 
   def generateStateStringGameOverState(controller: GameController): String = {
-    val separator = "=" * 80
-    val header = "GAME OVER"
+    val header = "GAME OVER\n"
 
     val allPlayers = controller.getAllPlayers
     val scoreSection =
@@ -162,30 +156,23 @@ class GameView(controller: GameController) extends Observer {
         }.mkString("\n")
       }
 
+    separator +
+    header +
     separator + "\n" +
-    header + "\n" +
-    separator + "\n\n" +
     "Final Scores:\n" +
     scoreSection + "\n\n" +
     "Play again? (y/n): "
   }
 
-
   def generateOutputStringGetSortStrategyState(controller: GameController): String = {
-    val sb = new StringBuilder
-    val separator = "=" * 80
-
-    sb.append(separator).append("\n")
-    sb.append("WÄHLE EINE SORTIERSTRATEGIE\n")
-    sb.append(separator).append("\n")
-    sb.append("1: Nach Farbe und Rang sortieren (Standard)\n")
-    sb.append("2: Nur nach Rang sortieren\n")
-    sb.append("3: Zufällige Reihenfolge\n")
-    sb.append("Bitte gib die Zahl der gewünschten Strategie ein: ")
-
-    sb.toString
+    separator +
+    "WÄHLE EINE SORTIERSTRATEGIE\n" +
+    separator +
+    "1: Nach Farbe und Rang sortieren (Standard)\n" +
+    "2: Nur nach Rang sortieren\n" +
+    "3: Zufällige Reihenfolge\n" +
+    "Bitte gib die Zahl der gewünschten Strategie ein: "
   }
-
 }
 
 
