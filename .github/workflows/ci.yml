@@ -2,10 +2,9 @@ name: Continuous Integration
 
 on:
   push:
-    branches: ['**']  # Alle Branches
+    branches: ['**']
   pull_request:
-    branches:
-      - '**'  # Alle Branches
+    branches: ['**']
 
 jobs:
   build:
@@ -21,10 +20,10 @@ jobs:
         java-version: '21'
         distribution: 'temurin'
 
-    - name: install sbt
+    - name: Install sbt
       uses: coursier/setup-action@v1
       with:
-          apps: sbt
+        apps: sbt
 
     - name: Cache SBT dependencies
       uses: actions/cache@v3
