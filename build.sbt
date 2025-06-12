@@ -13,6 +13,8 @@ lazy val root = project
 
     scalaVersion := scala3Version,
     coverageEnabled := true,
+    fork in Test := true,
+    Test / javaOptions += "-Djava.awt.headless=true",
 
     libraryDependencies ++= Seq(
       "org.scalactic" %% "scalactic" % "3.2.19",
