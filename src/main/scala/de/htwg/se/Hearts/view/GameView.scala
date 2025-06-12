@@ -11,21 +11,21 @@ class GameView(controller: GameController) extends Observer {
   override def update(): Unit = {
     val state = controller.getCurrentState()
     if (state.startsWith("GetPlayerNumberState")) {
-      println(generateOutputStringGetPlayerNumberState(controller))
+      println(generateOutputStringGetPlayerNumberState())
     } else if (state.startsWith("GetHumanPlayerCountState")) {
-      println(generateOutputStringGetHumanPlayerCountState(controller))
+      println(generateOutputStringGetHumanPlayerCountState())
     } else if (state.startsWith("GetPlayerNamesState")) {
-      println(generateOutputStringGetPlayerNamesState(controller))
+      println(generateOutputStringGetPlayerNamesState())
     } else if (state.startsWith("GamePlayState")) {
-      println(generateOutputStringGamePlayState(controller))
+      println(generateOutputStringGamePlayState())
     } else if (state.startsWith("GameOverState")) {
-      println(generateStateStringGameOverState(controller))
+      println(generateStateStringGameOverState())
     } else if (state.startsWith("GetSortStrategyState")) {
-      println(generateOutputStringGetSortStrategyState(controller))
+      println(generateOutputStringGetSortStrategyState())
     }
   }
 
-  def generateOutputStringGetPlayerNumberState(controller: GameController): String = {
+  def generateOutputStringGetPlayerNumberState(): String = {
     var output = ""
     output += separator
     output += header
@@ -45,7 +45,7 @@ class GameView(controller: GameController) extends Observer {
     output
   }
 
-  def generateOutputStringGetHumanPlayerCountState(controller: GameController): String = {
+  def generateOutputStringGetHumanPlayerCountState(): String = {
     var output = ""
     output += separator
     output += header
@@ -65,7 +65,7 @@ class GameView(controller: GameController) extends Observer {
     output
   }
 
-  def generateOutputStringGetPlayerNamesState(controller: GameController): String = {
+  def generateOutputStringGetPlayerNamesState(): String = {
     val state = controller.getInternalPlayerNameStateInfo
 
     val prompt = state match {
@@ -80,7 +80,7 @@ class GameView(controller: GameController) extends Observer {
     prompt
   }
 
-  def generateOutputStringGamePlayState(controller: GameController): String = {
+  def generateOutputStringGamePlayState(): String = {
   val separator = "=" * 150 + "\n"
 
   var output = ""
@@ -142,7 +142,7 @@ class GameView(controller: GameController) extends Observer {
 }
 
 
-  def generateStateStringGameOverState(controller: GameController): String = {
+  def generateStateStringGameOverState(): String = {
     val header = "GAME OVER\n"
 
     val allPlayers = controller.getAllPlayers
@@ -164,7 +164,7 @@ class GameView(controller: GameController) extends Observer {
     "Play again? (y/n): "
   }
 
-  def generateOutputStringGetSortStrategyState(controller: GameController): String = {
+  def generateOutputStringGetSortStrategyState(): String = {
     separator +
     "WÄHLE EINE SORTIERSTRATEGIE\n" +
     separator +
