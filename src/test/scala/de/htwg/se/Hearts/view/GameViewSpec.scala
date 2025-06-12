@@ -12,7 +12,7 @@ class GameViewSpec extends AnyWordSpec with Matchers {
     "render the player number input prompt correctly" in {
       val controller = new GameController()
       val view = new GameView(controller)
-      val output = view.generateOutputStringGetPlayerNumberState(controller)
+      val output = view.generateOutputStringGetPlayerNumberState()
       output should include("HEARTS GAME SETUP")
     }
 
@@ -23,7 +23,7 @@ class GameViewSpec extends AnyWordSpec with Matchers {
       controller.handleInput("3")  // 3 Spieler
       controller.handleInput("2")  // 2 menschliche Spieler
 
-      val output = view.generateOutputStringGetPlayerNamesState(controller)
+      val output = view.generateOutputStringGetPlayerNamesState()
       output should include("HEARTS GAME SETUP")
       output should (include("Gib den Namen für Spieler") or include("Bot_"))
     }
@@ -37,16 +37,16 @@ class GameViewSpec extends AnyWordSpec with Matchers {
       controller.handleInput("P1")
       controller.handleInput("P2")
       controller.handleInput("1")
-      val output = view.generateOutputStringGamePlayState(controller)
+      val output = view.generateOutputStringGamePlayState()
       output should include("Current Pot:")
       output should include("P1")
       output should include("P2")
       controller.handleInput("0")
       controller.handleInput("a")
-      val output2 = view.generateOutputStringGamePlayState(controller)
+      val output2 = view.generateOutputStringGamePlayState()
       output2 should include("Error: Please enter a valid number.")
       controller.handleInput("27")
-      val output3 = view.generateOutputStringGamePlayState(controller)
+      val output3 = view.generateOutputStringGamePlayState()
       output3 should include("Error: Index 27 is out of bounds for hand size 26 Please enter a number between 0 and 25")
     }
 
@@ -62,7 +62,7 @@ class GameViewSpec extends AnyWordSpec with Matchers {
 
       for (_ <- 0 until 52) controller.handleInput("0")
 
-      val output = view.generateStateStringGameOverState(controller)
+      val output = view.generateStateStringGameOverState()
       output should include("GAME OVER")
       controller.getAllPlayers.foreach(player =>
         output should include(player.name)
@@ -83,7 +83,7 @@ class GameViewSpec extends AnyWordSpec with Matchers {
     val controller = new GameController()
     val view = new GameView(controller)
 
-    val output = view.generateStateStringGameOverState(controller)
+    val output = view.generateStateStringGameOverState()
     output should include("Keine Spieler vorhanden.")
   }
 }
