@@ -10,10 +10,13 @@ import scalafx.scene.control._
 import scalafx.scene.layout._
 import scalafx.scene.text.Font
 import scalafx.scene.input._
+import scalafx.scene.Node
 
 class Gui(controller: GameController) extends Observer {
   val Placeholder = "[🂠🂠🂠🂠🂠🂠🂠🂠]\nPlaceholder"
-  private val mainPane = new BorderPane()
+   val mainPane = new BorderPane(){
+    id = "mainPane"
+   }
 
   def scene: Scene = new Scene(1000, 800) {
   root = mainPane
@@ -27,13 +30,17 @@ class Gui(controller: GameController) extends Observer {
     mainPane.center = new VBox {
       spacing = 20
       alignment = Pos.Center
+      id = "startPage_VBox"
       children = Seq(
         new Label("\u2665 Hearts \u2665") {
           font = Font("Arial", 36)
           style = "-fx-text-fill: darkred;"
+          id = "startPage_Label_Überschrift"
         },
         new Button("Neues Spiel starten") {
+          id = "startPage_startButton"
           onAction = _ => controller.handleInput("start")
+
         }
       )
     }
@@ -70,6 +77,7 @@ class Gui(controller: GameController) extends Observer {
     }
 
     val button = new Button("Bestätigen") {
+      id = "Button_Bestätigen"
       onAction = _ => {
         val input = inputField.text.value.trim
         if (input.nonEmpty) controller.handleInput(input)
@@ -90,9 +98,15 @@ class Gui(controller: GameController) extends Observer {
   }
 
   private def renderSortStrategyChoice(): Unit = {
-  val strategy1 = new RadioButton("1: Nach Farbe und Rang sortieren")
-  val strategy2 = new RadioButton("2: Nur nach Rang sortieren")
-  val strategy3 = new RadioButton("3: Zufällige Reihenfolge")
+  val strategy1 = new RadioButton("1: Nach Farbe und Rang sortieren"){
+    id = "gameSetup_Sortstrat_Radiobutton_strategy1"
+  }
+  val strategy2 = new RadioButton("2: Nur nach Rang sortieren"){
+    id = "gameSetup_Sortstrat_Radiobutton_strategy2"
+  }
+  val strategy3 = new RadioButton("3: Zufällige Reihenfolge"){
+    id = "gameSetup_Sortstrat_Radiobutton_strategy3"
+  }
 
   val toggleGroup = new ToggleGroup()
   Seq(strategy1, strategy2, strategy3).foreach(_.toggleGroup = toggleGroup)
@@ -108,6 +122,7 @@ class Gui(controller: GameController) extends Observer {
 
       controller.handleInput(input)
     }
+    id = "gameSetup_Sortstrat_confirmButton"
   }
 
   strategy1.onKeyPressed = key => {
@@ -127,16 +142,16 @@ class Gui(controller: GameController) extends Observer {
   }
 
   val content = new VBox {
+    id = "gameSetup_Sortstrat_VBox"
     spacing = 10
     alignment = Pos.Center
     children = Seq(
-      new Label("Wähle eine Sortierstrategie:") { font = Font("Arial", 16) },
+      new Label("Wähle eine Sortierstrategie:") { font = Font("Arial", 16)
+      id = "gameSetup_Sortstrat_Label"
+      },
       strategy1,
-      new Label("→ Sortiert nach Farbe (Kreuz, Pik, Herz, Karo) und Rang"),
       strategy2,
-      new Label("→ Sortiert nur nach Rang (2-A), Farbe egal"),
       strategy3,
-      new Label("→ Karten werden zufällig angezeigt"),
       confirmButton
     )
   }
@@ -154,6 +169,7 @@ class Gui(controller: GameController) extends Observer {
     def playerName(index: Int): String = players(index % players.size).name
 
     def nameLabel(name: String): Label = new Label(name) {
+      id = "gamePlay_Label_Playername"
       wrapText = true
       maxWidth = 100
       maxHeight = 40
@@ -164,6 +180,7 @@ class Gui(controller: GameController) extends Observer {
     def opponentView(name: String, rotation: Double, nameFirst: Boolean, orientation: String): Region = {
       val nameLbl = nameLabel(name)
       val cardLbl = new Label("[🂠🂠🂠🂠🂠]") {
+        id = "gamePlay_Label_PlaceholderCardsOponents"
         rotate = rotation
         style = "-fx-font-size: 16px;"
       }
@@ -171,6 +188,10 @@ class Gui(controller: GameController) extends Observer {
       orientation match {
         case "horizontal" =>
           new HBox {
+            id = "gamePlayer_HBox_"
+              + (if (rotation > 0) "Left" else "Right")
+              + "Player"
+
             spacing = 10
             alignment = if (rotation > 0) Pos.CenterLeft else Pos.CenterRight
             children = if (nameFirst) Seq(nameLbl, cardLbl) else Seq(cardLbl, nameLbl)
@@ -181,19 +202,23 @@ class Gui(controller: GameController) extends Observer {
             spacing = 10
             alignment = Pos.TopCenter
             children = Seq(nameLbl, cardLbl)
+            id = "gamePlayer_VBox_TopPlayer"
           }
       }
     }
 
     val undoButton = new Button("Undo") {
+      id = "gamePlay_undoButton"
       onAction = _ => controller.handleInput("undo")
     }
 
     val redoButton = new Button("Redo") {
+      id = "gamePlay_redoButton"
       onAction = _ => controller.handleInput("redo")
     }
 
     val undoRedoBox = new HBox {
+      id = "gamePlay_HBox_undoredo"
       spacing = 10
       alignment = Pos.TopRight
       padding = Insets(10)
@@ -201,6 +226,7 @@ class Gui(controller: GameController) extends Observer {
     }
 
     val centerPotView = new VBox {
+      id = "gamePlay_VBox_Pot"
       alignment = Pos.Center
       spacing = 10
       padding = Insets(0, 0, 40, 0)
@@ -209,6 +235,7 @@ class Gui(controller: GameController) extends Observer {
           style = "-fx-font-size: 14px;"
         },
         new HBox {
+          id = "gamePlay_HBox_PotDisplayCards"
           spacing = 20
           alignment = Pos.Center
           children = pot.map(card => new Label(card.toString))
@@ -217,9 +244,11 @@ class Gui(controller: GameController) extends Observer {
     }
 
     val layout = new BorderPane {
+      id = "gamePlay_BorderPane"
       padding = Insets(40)
 
       top = new VBox {
+        id = "gamePlay_VBox_undoredoPosition"
         spacing = 5
         children = {
           if (players.size == 4)
@@ -234,8 +263,10 @@ class Gui(controller: GameController) extends Observer {
       center = centerPotView
 
       bottom = new StackPane {
+        id = "gamePlay_StackPane_AktivePlayer"
         children = Seq(
           new VBox {
+            id = "gamePlay_VBox_AktivePlayer"
             alignment = Pos.BottomCenter
             spacing = 10
             padding = Insets(10)
@@ -246,11 +277,13 @@ class Gui(controller: GameController) extends Observer {
                 children = hand.zipWithIndex.map { case (card, index) =>
                   new Button(card.toString) {
                     onAction = _ => controller.handleInput(index.toString)
+                    id = "gamePlay_Button_HandkartButton"
                   }
                 }
               },
               new Label("Du bist dran:") {
                 style = "-fx-font-size: 14px;"
+                id = "gamePlay_Label_AktivePlayerTurn"
               },
               nameLabel(currentPlayer.name)
             )
@@ -260,6 +293,7 @@ class Gui(controller: GameController) extends Observer {
     }
 
     mainPane.center = new ScrollPane {
+      id = "gamePlay_ScrollPane"
       content = layout
       hbarPolicy = ScrollPane.ScrollBarPolicy.AsNeeded
       vbarPolicy = ScrollPane.ScrollBarPolicy.AsNeeded
@@ -337,4 +371,10 @@ class Gui(controller: GameController) extends Observer {
       )
     }
   }
+  // === Test-Getter Start ===
+
+  def getMainPane: BorderPane = mainPane
+  def getCurrentCenterNode: Node = mainPane.center()
+  // === Test-Getter Ende ===
+
 }
