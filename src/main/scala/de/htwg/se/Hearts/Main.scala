@@ -9,7 +9,7 @@ object Main extends JFXApp3 {
 
 
 
-  
+
 
   override def start(): Unit = {
     val controller = new GameController()
@@ -22,15 +22,7 @@ object Main extends JFXApp3 {
     }
 
     new Thread(() => {
-      var running = true
-      while (running) {
-        val input = scala.io.StdIn.readLine()
-        controller.handleInput(input)
-        if (controller.getCurrentState().startsWith("GameOverState")) {
-          println("TUI beendet – Spiel ist vorbei.")
-          running = false
-        }
-      }
+      controller.runGame()
     }).start()
   }
 }

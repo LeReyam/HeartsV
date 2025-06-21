@@ -47,29 +47,84 @@ class Gui(controller: GameController) extends Observer {
   }
   override def update(): Unit = {
     Platform.runLater {
-      val stateText = controller.getCurrentState()
-      if (stateText.startsWith("GetPlayerNumberState")) {
-        renderInput("Anzahl Spieler (3-4):", "4")
-      } else if (stateText.startsWith("GetHumanPlayerCountState")) {
-        renderInput("Wie viele Menschen spielen mit?", "2")
-      }else if (stateText.startsWith("GetPlayerNamesState")) {
-        controller.getInternalPlayerNameStateInfo match {
-          case Right((currentIndex, totalHumans)) =>
-            renderInput(s"Name des ${currentIndex + 1}. Spielers:", "Spieler")
-          case _ =>
-            renderInput("Spielername:", "Spieler")
-        }
-      } else if (stateText.startsWith("GetSortStrategyState")) {
-        renderSortStrategyChoice()
-      } else if (stateText.startsWith("GamePlayState")) {
-        renderGamePlay()
-      } else if (stateText.startsWith("GameOverState")) {
-        renderGameOver()
-      } else {
-        renderMessage("Unbekannter Zustand", stateText)
+      controller.getCurrentState() match {
+        case state if state.startsWith("GetPlayerNumberState") =>
+          showPlayerNumberInput()
+        case state if state.startsWith("GetHumanPlayerCountState") =>
+          showHumanPlayerCountInput()
+        case state if state.startsWith("GetPlayerNamesState") =>
+          showPlayerNameInputs()
+        case state if state.startsWith("GetSortStrategyState") =>
+          renderSortStrategyChoice()
+
+        case state if state.startsWith("GamePlayState") =>
+          showGamePlayScreen()
+        case state if state.startsWith("GameOverState") =>
+          showGameOverScreen()
+        case _ =>
+          println("Unbekannter State in GUI")
       }
     }
   }
+
+  private def showPlayerNumberInput(): Unit = {
+    mainPane.center = new VBox {
+      spacing = 10
+      alignment = Pos.Center
+      children = Seq(
+        new Label("Wie viele Spieler?"),
+        new TextField {
+          promptText = "Anzahl (z. B. 4)"
+          onAction = handle {
+            controller.handleInput(text.value.trim)
+          }
+        }
+      )
+    }
+  }
+
+  private def showHumanPlayerCountInput(): Unit = {
+    mainPane.center = new VBox {
+      spacing = 10
+      alignment = Pos.Center
+      children = Seq(
+        new Label("Wie viele menschliche Spieler?"),
+        new TextField {
+          promptText = "z. B. 2"
+          onAction = handle {
+            controller.handleInput(text.value.trim)
+
+          }
+        }
+      )
+    }
+  }
+
+  private def showPlayerNameInputs(): Unit = {
+    mainPane.center = new VBox {
+      spacing = 10
+      alignment = Pos.Center
+      children = Seq(
+        new Label("Bitte Spielernamen eingeben:"),
+        new TextField {
+          promptText = "Name"
+          onAction = handle {
+            controller.handleInput(text.value.trim)
+
+          }
+        }
+      )
+    }
+  }
+
+  private def showGamePlayScreen(): Unit = {
+    renderGamePlay()
+  }
+
+  private def showGameOverScreen(): Unit = {
+    renderGameOver()
+  }
+
 
   private def renderInput(prompt: String, default: String): Unit = {
     val inputField = new TextField {
@@ -332,7 +387,7 @@ class Gui(controller: GameController) extends Observer {
     }
 
     val newGameBtn = new Button("Neues Spiel") {
-      onAction = _ => controller.handleInput("start")
+      onAction = _ => controller.restartGame()
     }
 
     val exitBtn = new Button("Beenden") {

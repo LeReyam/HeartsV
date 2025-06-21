@@ -155,12 +155,16 @@ class GameView(controller: GameController) extends Observer {
           s"${index + 1}. ${player.name}: ${player.points} points"
         }.mkString("\n")
       }
-
+    val errorMessage = controller.getLastGameOverInputError match {
+      case Some(msg) => msg + "\n"
+      case None => ""
+    }
     separator +
     header +
     separator + "\n" +
     "Final Scores:\n" +
     scoreSection + "\n\n" +
+    errorMessage + "\n\n" +
     "Play again? (y/n): "
   }
 

@@ -126,21 +126,46 @@ class GameController extends Observable {
     notifyObservers()
 
     while (running) {
-      val input = GetUserInput()
+      val rawInput = GetUserInput()
+      val input = Option(rawInput).getOrElse("").trim.toLowerCase
 
-      val nextState = currentState.handleInput(input, this)
+      if (input.isEmpty) {
+        println("Bitte eine Eingabe machen.")
+        notifyObservers()
+      } else {
+        currentState match {
+          case _: GameOverState =>
+            input match {
+              case "y" =>
+                clearLastGameOverInputError()
+                restartGame()
+              case "n" | "exit" =>
+                println("Spiel wird beendet.")
+                running = false
+              case _ =>
+                setLastGameOverInputError("Fehler: Ungültige Eingabe. Bitte 'y' für Neustart oder 'n'/'exit' für Beenden eingeben.")
+                notifyObservers()
+            }
 
-      if (nextState != currentState) {
-        currentState = nextState
+          case _ =>
+            val nextState = currentState.handleInput(input, this)
+
+            if (nextState != currentState) {
+              currentState = nextState
+            }
+
+            notifyObservers()
+        }
       }
-
-      if (currentState.isInstanceOf[GameOverState] && input.trim.toLowerCase != "y") {
-        running = false
-      }
-
-      notifyObservers()
     }
   }
+
+
+  def restartGame(): Unit = {
+    currentState = new GetPlayerNumberState()
+    notifyObservers()
+  }
+
 
   protected def GetUserInput(): String = {
     StdIn.readLine()
@@ -207,5 +232,14 @@ class GameController extends Observable {
   def getLastCardIndexTry: Try[Int] = lastCardIndexTry
   def getLastPlayerCountTry: Try[Int] = lastPlayerCountTry
   def getLastHumanCountTry: Try[Int] = lastHumanCountTry
+  private var lastGameOverInputError: Option[String] = None
+
+  def setLastGameOverInputError(msg: String): Unit =
+    lastGameOverInputError = Some(msg)
+
+  def getLastGameOverInputError: Option[String] = lastGameOverInputError
+
+  def clearLastGameOverInputError(): Unit =
+    lastGameOverInputError = None
 
 }
