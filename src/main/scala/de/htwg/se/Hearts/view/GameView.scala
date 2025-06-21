@@ -10,7 +10,9 @@ class GameView(controller: GameController) extends Observer {
   val header = "HEARTS GAME SETUP\n"
   override def update(): Unit = {
     val state = controller.getCurrentState()
-    if (state.startsWith("GetPlayerNumberState")) {
+    if (state.startsWith("StartState")){
+      print(generateOutputStringStartState())
+    }else if (state.startsWith("GetPlayerNumberState")) {
       println(generateOutputStringGetPlayerNumberState())
     } else if (state.startsWith("GetHumanPlayerCountState")) {
       println(generateOutputStringGetHumanPlayerCountState())
@@ -177,6 +179,10 @@ class GameView(controller: GameController) extends Observer {
     "3: Zufällige Reihenfolge\n" +
     "Bitte gib die Zahl der gewünschten Strategie ein: "
   }
+  def generateOutputStringStartState(): String =
+    "\u2665 Hearts \u2665\n" +
+      "Gib 'start' ein, um ein neues Spiel zu beginnen:\n"
 }
+
 
 

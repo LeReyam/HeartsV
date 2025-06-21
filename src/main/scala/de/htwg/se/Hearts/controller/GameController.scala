@@ -11,7 +11,7 @@ class GameController extends Observable {
   private var currentPot: ListBuffer[Card] = ListBuffer()
   private var currentPlayerIndex: Int = 0
   private var gameOver: Boolean = false
-  private var currentState: GameState = new GetPlayerNumberState()
+  private var currentState: GameState = new StartState()
   private var sortStrategy: SortStrategy = new SortBySuitThenRank()
   private var commandHistory: ListBuffer[Command] = ListBuffer()
   private var redoStack: ListBuffer[Command] = ListBuffer()
@@ -172,7 +172,7 @@ class GameController extends Observable {
   }
 
   def getCurrentState(): String = {
-    currentState.generateStateString(this)
+    currentState.generateStateString()
   }
 
   def handleInput(input: String): Unit = {

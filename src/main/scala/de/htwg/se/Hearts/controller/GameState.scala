@@ -8,7 +8,7 @@ import scala.io.StdIn
 
 trait GameState {
   def handleInput(input: String, controller: GameController): GameState
-  def generateStateString(controller: GameController): String
+  def generateStateString(): String
 }
 
 
@@ -20,7 +20,7 @@ class GetPlayerNumberState extends GameState {
     }
   }
 
-  override def generateStateString(controller: GameController): String = {
+  override def generateStateString(): String = {
     "GetPlayerNumberState"
   }
 }
@@ -33,7 +33,7 @@ class GetHumanPlayerCountState(playerCount: Int) extends GameState {
     }
   }
 
-  override def generateStateString(controller: GameController): String = {
+  override def generateStateString(): String = {
     "GetHumanPlayerCountState"
   }
 }
@@ -69,7 +69,7 @@ class GetPlayerNamesState(playerCount: Int, humanCount: Int) extends GameState {
     (currentPlayerIndex, humanCount)
   }
 
-  override def generateStateString(controller: GameController): String = {
+  override def generateStateString(): String = {
     "GetPlayerNamesState"
   }
 }
@@ -104,7 +104,7 @@ class GamePlayState extends GameState {
     }
   }
 
-  override def generateStateString(controller: GameController): String = {
+  override def generateStateString(): String = {
     "GamePlayState"
   }
 }
@@ -125,7 +125,7 @@ class GetSortStrategyState extends GameState {
     }
   }
 
-  override def generateStateString(controller: GameController): String = {
+  override def generateStateString(): String = {
     "GetSortStrategyState"
   }
 
@@ -140,12 +140,13 @@ class GameOverState extends GameState {
     }
   }
 
-  override def generateStateString(controller: GameController): String = {
+  override def generateStateString(): String = {
     "GameOverState"
   }
 }
 
 class StartState extends GameState {
+
   override def handleInput(input: String, controller: GameController): GameState = {
     if (input.trim.toLowerCase == "start") {
       new GetPlayerNumberState()
@@ -154,7 +155,7 @@ class StartState extends GameState {
     }
   }
 
-  override def generateStateString(controller: GameController): String = {
+  override def generateStateString(): String ={
     "StartState"
   }
 }
