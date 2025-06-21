@@ -11,6 +11,7 @@ import scalafx.scene.layout._
 import scalafx.scene.text.Font
 import scalafx.scene.input._
 import scalafx.scene.Node
+import scala.util._
 
 class Gui(controller: GameController) extends Observer {
   val Placeholder = "[🂠🂠🂠🂠🂠🂠🂠🂠]\nPlaceholder"
@@ -48,6 +49,8 @@ class Gui(controller: GameController) extends Observer {
   override def update(): Unit = {
     Platform.runLater {
       controller.getCurrentState() match {
+        case state if state.startsWith("StartState") =>
+          showStartScreen()
         case state if state.startsWith("GetPlayerNumberState") =>
           showPlayerNumberInput()
         case state if state.startsWith("GetHumanPlayerCountState") =>
@@ -68,22 +71,58 @@ class Gui(controller: GameController) extends Observer {
   }
 
   private def showPlayerNumberInput(): Unit = {
+    val errorLabel = new Label {
+      id = ""
+      style = "-fx-text-fill: red;"
+      text = controller.getLastPlayerCountTry match {
+        case Failure(_: IndexOutOfBoundsException) =>
+          "Spieleranzahl muss zwischen 3 und 4 liegen."
+        case Failure(_: NumberFormatException) =>
+          "Bitte gib eine gültige Zahl ein."
+        case Failure(e) =>
+          s"Fehler: ${e.getMessage}"
+        case Success(_) => ""
+      }
+    }
+
     mainPane.center = new VBox {
+      id = ""
       spacing = 10
       alignment = Pos.Center
       children = Seq(
-        new Label("Wie viele Spieler?"),
+        new Label("Bitte eine Spieleranzahl eingeben."),
+        new Label("Möglich sind 3 oder 4:"),
         new TextField {
-          promptText = "Anzahl (z. B. 4)"
+          promptText = "Anzahl (3 oder 4)"
           onAction = handle {
             controller.handleInput(text.value.trim)
           }
-        }
+        },
+        errorLabel
       )
     }
   }
 
+
   private def showHumanPlayerCountInput(): Unit = {
+    val maxPlayers: Int = controller.getLastPlayerCountTry match {
+      case Success(count) => count
+      case _ => 4 // Fallback, falls keine Info verfügbar ist
+    }
+
+    val errorLabel = new Label {
+      style = "-fx-text-fill: red;"
+      text = controller.getLastHumanCountTry match {
+        case Failure(_: IndexOutOfBoundsException) =>
+          s"Zahl muss zwischen 1 und $maxPlayers liegen."
+        case Failure(_: NumberFormatException) =>
+          "Bitte gib eine gültige Zahl ein."
+        case Failure(e) =>
+          s"Fehler: ${e.getMessage}"
+        case Success(_) => ""
+      }
+    }
+
     mainPane.center = new VBox {
       spacing = 10
       alignment = Pos.Center
@@ -93,19 +132,27 @@ class Gui(controller: GameController) extends Observer {
           promptText = "z. B. 2"
           onAction = handle {
             controller.handleInput(text.value.trim)
-
           }
-        }
+        },
+        errorLabel
       )
     }
   }
 
+
   private def showPlayerNameInputs(): Unit = {
+    val promptLabel = new Label {
+      text = controller.getInternalPlayerNameStateInfo match {
+        case Right((index, _)) => s"Gib den Namen für Spieler ${index + 1} ein:"
+        case Left(_)           => "Gib einen Spielernamen ein:"
+      }
+    }
+
     mainPane.center = new VBox {
       spacing = 10
       alignment = Pos.Center
       children = Seq(
-        new Label("Bitte Spielernamen eingeben:"),
+        promptLabel,
         new TextField {
           promptText = "Name"
           onAction = handle {

@@ -144,3 +144,17 @@ class GameOverState extends GameState {
     "GameOverState"
   }
 }
+
+class StartState extends GameState {
+  override def handleInput(input: String, controller: GameController): GameState = {
+    if (input.trim.toLowerCase == "start") {
+      new GetPlayerNumberState()
+    } else {
+      this
+    }
+  }
+
+  override def generateStateString(controller: GameController): String = {
+    "StartState"
+  }
+}

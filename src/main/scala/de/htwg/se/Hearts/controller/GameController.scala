@@ -162,7 +162,7 @@ class GameController extends Observable {
 
 
   def restartGame(): Unit = {
-    currentState = new GetPlayerNumberState()
+    currentState = new StartState()
     notifyObservers()
   }
 
