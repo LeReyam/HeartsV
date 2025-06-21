@@ -8,6 +8,9 @@ class GameView(controller: GameController) extends Observer {
   controller.addObserver(this)
   val separator = "=" * 80 + "\n"
   val header = "HEARTS GAME SETUP\n"
+  val red = "\u001b[31m"
+  val darkred = "\u001b[38;2;139;0;0m"
+  val reset = "\u001b[0m"
   override def update(): Unit = {
     val state = controller.getCurrentState()
     if (state.startsWith("StartState")){
@@ -34,11 +37,10 @@ class GameView(controller: GameController) extends Observer {
 
     controller.getLastPlayerCountTry match {
       case Failure(_: IndexOutOfBoundsException) =>
-        output += "Error: Spieleranzahl außerhalb des gültigen Bereichs\n"
+        output += s"$red Error: Spieleranzahl außerhalb des gültigen Bereichs\n$reset"
       case Failure(_: NumberFormatException) =>
         output += "Please enter a Number\n"
       case Failure(e) =>
-        output += s"Error: ${e.getMessage}\n"
       case Success(_) =>
     }
 
@@ -54,11 +56,11 @@ class GameView(controller: GameController) extends Observer {
 
     controller.getLastHumanCountTry match {
       case Failure(_: IndexOutOfBoundsException) =>
-        output += "Error: Ungültige Spieleranzahl\n"
+        output += s"$red Error: Ungültige Spieleranzahl\n$reset"
       case Failure(_: NumberFormatException) =>
         output += "Please enter a Number\n"
       case Failure(e) =>
-        output += s"Error: ${e.getMessage}\n"
+        output += s"$red Error: ${e.getMessage}\n$reset"
       case Success(_) =>
     }
 
@@ -71,7 +73,7 @@ class GameView(controller: GameController) extends Observer {
     val state = controller.getInternalPlayerNameStateInfo
 
     val prompt = state match {
-      case Left(_) => "Error: Invalid state"
+      case Left(_) => s"$red Error: Invalid state$reset"
       case Right((index, _)) =>
         s"Gib den Namen für Spieler ${index + 1} ein:"
     }
@@ -129,11 +131,11 @@ class GameView(controller: GameController) extends Observer {
 
   controller.getLastCardIndexTry match {
     case Failure(e: NumberFormatException) =>
-      output += "\nError: Please enter a valid number.\n"
+      output += s"$red \nError: Please enter a valid number.\n$reset"
     case Failure(e: IndexOutOfBoundsException) =>
-      output += s"\nError: ${e.getMessage} Please enter a number between 0 and ${currentPlayerHand.length -1}\n"
+      output += s"$red \nError: ${e.getMessage} Please enter a number between 0 and ${currentPlayerHand.length -1}\n$reset"
     case Failure(e) =>
-      output += s"\nError: ${e.getMessage}\n"
+      output += s"\n$red Error: ${e.getMessage}\n$reset"
     case Success(_) =>
   }
 
@@ -165,8 +167,8 @@ class GameView(controller: GameController) extends Observer {
     header +
     separator + "\n" +
     "Final Scores:\n" +
-    scoreSection + "\n\n" +
-    errorMessage + "\n\n" +
+    scoreSection + s"\n\n$red " +
+    errorMessage + s"\n\n$reset" +
     "Play again? (y/n): "
   }
 
@@ -180,7 +182,7 @@ class GameView(controller: GameController) extends Observer {
     "Bitte gib die Zahl der gewünschten Strategie ein: "
   }
   def generateOutputStringStartState(): String =
-    "\u2665 Hearts \u2665\n" +
+    s"$darkred\u2665 Hearts \u2665\n$reset" +
       "Gib 'start' ein, um ein neues Spiel zu beginnen:\n"
 }
 
