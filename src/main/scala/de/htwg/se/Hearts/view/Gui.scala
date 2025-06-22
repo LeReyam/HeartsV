@@ -11,7 +11,7 @@ import scalafx.scene.layout._
 import scalafx.scene.text.Font
 import scalafx.scene.input._
 import scalafx.scene.Node
-import scala.util._
+import scala.util.{Try, Success, Failure}
 
 class Gui(controller: GameController) extends Observer {
   val Placeholder = "[🂠🂠🂠🂠🂠🂠🂠🂠]\nPlaceholder"
