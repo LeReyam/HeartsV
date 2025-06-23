@@ -1,7 +1,7 @@
 package de.htwg.se.Hearts.view
 
 import de.htwg.se.Hearts.controller.GameController
-import de.htwg.se.Hearts.model.Observer
+import de.htwg.se.Hearts.model._
 import scalafx.application.Platform
 import scalafx.geometry.{Insets, Pos}
 import scalafx.scene.Scene
@@ -12,21 +12,22 @@ import scalafx.scene.text.Font
 import scalafx.scene.input._
 import scalafx.scene.Node
 import scala.util.{Try, Success, Failure}
+import scalafx.scene.image.{Image, ImageView}
 
 class Gui(controller: GameController) extends Observer {
   val Placeholder = "[🂠🂠🂠🂠🂠🂠🂠🂠]\nPlaceholder"
+
    val mainPane = new BorderPane(){
     id = "mainPane"
    }
 
   def scene: Scene = new Scene(1000, 800) {
   root = mainPane
-
 }
-
 
   controller.addObserver(this)
   showStartScreen()
+
   private def showStartScreen(): Unit = {
     mainPane.center = new VBox {
       spacing = 20
@@ -156,8 +157,13 @@ class Gui(controller: GameController) extends Observer {
         new TextField {
           promptText = "Name"
           onAction = handle {
-            controller.handleInput(text.value.trim)
-
+            val nameInput = text.value.trim
+            val fallbackName = controller.getInternalPlayerNameStateInfo match {
+              case Right((index, _)) => s"Player ${index + 1}"
+              case _ => "Player"
+            }
+            val finalName = if (nameInput.isEmpty) fallbackName else nameInput
+            controller.handleInput(finalName)
           }
         }
       )
@@ -200,66 +206,66 @@ class Gui(controller: GameController) extends Observer {
   }
 
   private def renderSortStrategyChoice(): Unit = {
-  val strategy1 = new RadioButton("1: Nach Farbe und Rang sortieren"){
-    id = "gameSetup_Sortstrat_Radiobutton_strategy1"
-  }
-  val strategy2 = new RadioButton("2: Nur nach Rang sortieren"){
-    id = "gameSetup_Sortstrat_Radiobutton_strategy2"
-  }
-  val strategy3 = new RadioButton("3: Zufällige Reihenfolge"){
-    id = "gameSetup_Sortstrat_Radiobutton_strategy3"
-  }
-
-  val toggleGroup = new ToggleGroup()
-  Seq(strategy1, strategy2, strategy3).foreach(_.toggleGroup = toggleGroup)
-  strategy1.selected = true
-
-  val confirmButton = new Button("Sortierstrategie wählen") {
-    onAction = _ => {
-      val input =
-        if (strategy1.selected.value) "1"
-        else if (strategy2.selected.value) "2"
-        else if (strategy3.selected.value) "3"
-        else "1"
-
-      controller.handleInput(input)
+    val strategy1 = new RadioButton("1: Nach Farbe und Rang sortieren"){
+      id = "gameSetup_Sortstrat_Radiobutton_strategy1"
     }
-    id = "gameSetup_Sortstrat_confirmButton"
-  }
-
-  strategy1.onKeyPressed = key => {
-    if (key.code == KeyCode.Enter) {
-      controller.handleInput("1")
+    val strategy2 = new RadioButton("2: Nur nach Rang sortieren"){
+      id = "gameSetup_Sortstrat_Radiobutton_strategy2"
     }
-  }
-  strategy2.onKeyPressed = key => {
-    if (key.code == KeyCode.Enter) {
-      controller.handleInput("2")
+    val strategy3 = new RadioButton("3: Zufällige Reihenfolge"){
+      id = "gameSetup_Sortstrat_Radiobutton_strategy3"
     }
-  }
-  strategy3.onKeyPressed = key => {
-    if (key.code == KeyCode.Enter) {
-      controller.handleInput("3")
+
+    val toggleGroup = new ToggleGroup()
+    Seq(strategy1, strategy2, strategy3).foreach(_.toggleGroup = toggleGroup)
+    strategy1.selected = true
+
+    val confirmButton = new Button("Sortierstrategie wählen") {
+      onAction = _ => {
+        val input =
+          if (strategy1.selected.value) "1"
+          else if (strategy2.selected.value) "2"
+          else if (strategy3.selected.value) "3"
+          else "1"
+
+        controller.handleInput(input)
+      }
+      id = "gameSetup_Sortstrat_confirmButton"
     }
-  }
 
-  val content = new VBox {
-    id = "gameSetup_Sortstrat_VBox"
-    spacing = 10
-    alignment = Pos.Center
-    children = Seq(
-      new Label("Wähle eine Sortierstrategie:") { font = Font("Arial", 16)
-      id = "gameSetup_Sortstrat_Label"
-      },
-      strategy1,
-      strategy2,
-      strategy3,
-      confirmButton
-    )
-  }
+    strategy1.onKeyPressed = key => {
+      if (key.code == KeyCode.Enter) {
+        controller.handleInput("1")
+      }
+    }
+    strategy2.onKeyPressed = key => {
+      if (key.code == KeyCode.Enter) {
+        controller.handleInput("2")
+      }
+    }
+    strategy3.onKeyPressed = key => {
+      if (key.code == KeyCode.Enter) {
+        controller.handleInput("3")
+      }
+    }
 
-  mainPane.center = content
-}
+    val content = new VBox {
+      id = "gameSetup_Sortstrat_VBox"
+      spacing = 10
+      alignment = Pos.Center
+      children = Seq(
+        new Label("Wähle eine Sortierstrategie:") { font = Font("Arial", 16)
+        id = "gameSetup_Sortstrat_Label"
+        },
+        strategy1,
+        strategy2,
+        strategy3,
+        confirmButton
+      )
+    }
+
+    mainPane.center = content
+  }
 
   private def renderGamePlay(): Unit = {
     val players = controller.getAllPlayers
@@ -279,32 +285,36 @@ class Gui(controller: GameController) extends Observer {
       style = "-fx-font-size: 12px; -fx-alignment: center;"
     }
 
-    def opponentView(name: String, rotation: Double, nameFirst: Boolean, orientation: String): Region = {
+    def opponentView(index: Int, name: String, rotation: Double, nameFirst: Boolean, orientation: String): Region = {
       val nameLbl = nameLabel(name)
-      val cardLbl = new Label("[🂠🂠🂠🂠🂠]") {
-        id = "gamePlay_Label_PlaceholderCardsOponents"
-        rotate = rotation
-        style = "-fx-font-size: 16px;"
-      }
+      val opponentHand = controller.getSortedHandForPlayer(index % players.length)
+      val cardsView = renderOverlappingCards(opponentHand, showFront = false, rotation)
 
       orientation match {
         case "horizontal" =>
-          new HBox {
-            id = "gamePlayer_HBox_"
-              + (if (rotation > 0) "Left" else "Right")
-              + "Player"
+          val nameBox = new VBox {
+            alignment = Pos.Center
+            children = Seq(nameLbl)
+          }
 
+          if (nameFirst)
+            HBox.setMargin(nameBox, Insets(0, 20, 0, 0))
+          else
+            HBox.setMargin(nameBox, Insets(0, 0, 0, 20))
+
+          new HBox {
+            id = s"gamePlayer_HBox_${if (rotation > 0) "Left" else "Right"}Player"
             spacing = 10
             alignment = if (rotation > 0) Pos.CenterLeft else Pos.CenterRight
-            children = if (nameFirst) Seq(nameLbl, cardLbl) else Seq(cardLbl, nameLbl)
+            children = if (nameFirst) Seq(nameBox, cardsView) else Seq(cardsView, nameBox)
           }
 
         case "vertical" =>
           new VBox {
+            id = "gamePlayer_VBox_TopPlayer"
             spacing = 10
             alignment = Pos.TopCenter
-            children = Seq(nameLbl, cardLbl)
-            id = "gamePlayer_VBox_TopPlayer"
+            children = Seq(nameLbl, cardsView)
           }
       }
     }
@@ -354,14 +364,30 @@ class Gui(controller: GameController) extends Observer {
         spacing = 5
         children = {
           if (players.size == 4)
-            Seq(undoRedoBox, opponentView(playerName(current + 3), 180, nameFirst = true, orientation = "vertical"))
-          else
-            Seq(undoRedoBox)
+            Seq(
+              undoRedoBox,
+              opponentView(
+                (current + 3) % players.length,
+                playerName((current + 3) % players.length),
+                180, nameFirst = true, orientation = "vertical"
+              )
+            )
+          else Seq(undoRedoBox)
         }
       }
 
-      left = opponentView(playerName(current + 1), 90, nameFirst = true, orientation = "horizontal")
-      right = opponentView(playerName(current + 2), -90, nameFirst = false, orientation = "horizontal")
+      left = opponentView(
+        (current + 1) % players.length,
+        playerName((current + 1) % players.length),
+        90, nameFirst = true, orientation = "horizontal"
+      )
+
+      right = opponentView(
+        (current + 2) % players.length,
+        playerName((current + 2) % players.length),
+        -90, nameFirst = false, orientation = "horizontal"
+      )
+
       center = centerPotView
 
       bottom = new StackPane {
@@ -373,16 +399,7 @@ class Gui(controller: GameController) extends Observer {
             spacing = 10
             padding = Insets(10)
             children = Seq(
-              new HBox {
-                spacing = 8
-                alignment = Pos.Center
-                children = hand.zipWithIndex.map { case (card, index) =>
-                  new Button(card.toString) {
-                    onAction = _ => controller.handleInput(index.toString)
-                    id = "gamePlay_Button_HandkartButton"
-                  }
-                }
-              },
+              renderOverlappingCards(hand, showFront = true),
               new Label("Du bist dran:") {
                 style = "-fx-font-size: 14px;"
                 id = "gamePlay_Label_AktivePlayerTurn"
@@ -404,6 +421,7 @@ class Gui(controller: GameController) extends Observer {
       padding = Insets(10)
     }
   }
+
 
 
 
@@ -473,6 +491,66 @@ class Gui(controller: GameController) extends Observer {
       )
     }
   }
+
+  def renderOverlappingCards(cards: List[Card], showFront: Boolean, rotation: Double = 0): StackPane = {
+    val stack = new StackPane {
+      alignment = Pos.Center
+    }
+
+    val totalOffset = (cards.length - 1) * 20 / 2.0
+
+    for ((card, i) <- cards.zipWithIndex) {
+      val imageView = if (showFront) renderCard(card) else renderBack()
+      imageView.rotate = rotation
+
+      val offset = i * 20 - totalOffset
+
+      rotation match {
+        case 90 | -90 =>
+          imageView.translateY = offset
+        case _ =>
+          imageView.translateX = offset
+      }
+
+      val node = if (showFront) {
+        new Button {
+          graphic = imageView
+          onAction = _ => controller.handleInput(i.toString)
+          style = "-fx-background-color: transparent;"
+        }
+      } else imageView
+
+      rotation match {
+        case 90 | -90 =>
+          node.translateY = offset
+        case _ =>
+          node.translateX = offset
+      }
+
+      stack.children.add(node)
+    }
+
+    stack
+  }
+
+  def renderBack(): ImageView = new ImageView(
+    new Image(getClass.getResourceAsStream("/cards/backside.png"))
+  )
+
+  def renderCard(card: Card): ImageView = {
+  val path = s"/cards/${card.rank.fileName}_of_${card.suit.fileName}.png"
+  val stream = getClass.getResourceAsStream(path)
+  if (stream == null) {
+    println(s"[FEHLER] Bild nicht gefunden: $path")
+    return new ImageView(new Image(getClass.getResourceAsStream("/cards/backside.png")))
+  }
+  new ImageView(new Image(stream))
+}
+
+
+
+
+
   // === Test-Getter Start ===
 
   def getMainPane: BorderPane = mainPane
