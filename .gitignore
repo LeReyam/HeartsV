@@ -79,5 +79,5 @@ null/
 .cache-main
 
 # Resource Folder
-/src/main/resources/*
-!/src/main/resources/.gitkeep
+#/src/main/resources/*
+#!/src/main/resources/.gitkeep

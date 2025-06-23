@@ -3,6 +3,8 @@ package de.htwg.se.Hearts.model
 enum Suit extends Ordered[Suit]:
   case Hearts, Spades, Diamonds, Clubs
 
+  def fileName: String = this.toString.toLowerCase 
+
   override def compare(that: Suit): Int =
     this.ordinal.compare(that.ordinal)
 
@@ -11,3 +13,4 @@ enum Suit extends Ordered[Suit]:
     case Spades   => "\u2660"
     case Diamonds => "\u2666"
     case Clubs    => "\u2663"
+

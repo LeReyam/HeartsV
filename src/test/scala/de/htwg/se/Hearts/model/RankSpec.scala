@@ -41,5 +41,15 @@ class RankSpec extends AnyWordSpec with Matchers {
       Rank.King.toString should be("K")
       Rank.Ace.toString should be("A")
     }
+
+    "return correct file names" in {
+      Rank.Two.fileName should be("2")
+      Rank.Ten.fileName should be("10")
+      Rank.Jack.fileName should be("jack")
+      Rank.Queen.fileName should be("queen")
+      Rank.King.fileName should be("king")
+      Rank.Ace.fileName should be("ace")
+    }
+
   }
 }

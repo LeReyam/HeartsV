@@ -21,4 +21,15 @@ Dieses Projekt verwendet GitHub Actions zur automatischen Ausführung von Tests 
 Lokal kannst du die Tests und die Coverage-Berichte mit folgendem Befehl ausführen:
 
 ```bash
-sbt clean coverage test coverageReport
+sbt clean coverage test
+```
+
+Credits:
+Card backside:
+https://commons.wikimedia.org/wiki/File:Reverso_baraja_española_rojo.svg
+
+card-deck:
+https://opengameart.org/content/playing-cards-vector-png
+We editet the Aces a little bit with Inkscape. Just reduced the size of the symboles in the center of the cards.
+Converted the cards zu pngs by our self with a small python script: convert_svg_to_png.py
+

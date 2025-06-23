@@ -29,5 +29,13 @@ class SuitSpec extends AnyWordSpec with Matchers {
       Suit.Spades.compare(Suit.Hearts) should be > 0
       Suit.Diamonds.compare(Suit.Diamonds) shouldBe 0
     }
+
+    "return correct file names" in {
+      Suit.Hearts.fileName should be("hearts")
+      Suit.Diamonds.fileName should be("diamonds")
+      Suit.Clubs.fileName should be("clubs")
+      Suit.Spades.fileName should be("spades")
+    }
+
   }
 }

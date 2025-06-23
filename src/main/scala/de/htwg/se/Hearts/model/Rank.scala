@@ -15,6 +15,13 @@ enum Rank(val value: Int) extends Ordered[Rank]:
   case King  extends Rank(12)
   case Ace   extends Rank(13)
 
+  def fileName: String = this match
+    case Jack  => "jack"
+    case Queen => "queen"
+    case King  => "king"
+    case Ace   => "ace"
+    case _     => this.value.toString  // für 2–10
+
   override def toString: String = this match
     case Two   => "2"
     case Three => "3"
@@ -29,6 +36,6 @@ enum Rank(val value: Int) extends Ordered[Rank]:
     case Queen => "Q"
     case King  => "K"
     case Ace   => "A"
-    
+
   override def compare(that: Rank): Int =
     this.value.compare(that.value)
