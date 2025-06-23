@@ -77,3 +77,7 @@ null/
 .history
 .scala_dependencies
 .cache-main
+
+# Resource Folder
+/src/main/resources/*
+!/src/main/resources/.gitkeep
