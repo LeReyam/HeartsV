@@ -341,19 +341,14 @@ class Gui(controller: GameController) extends Observer {
       id = "gamePlay_VBox_Pot"
       alignment = Pos.Center
       spacing = 10
-      padding = Insets(0, 0, 40, 0)
       children = Seq(
         new Label("Aktueller Stich:") {
-          style = "-fx-font-size: 14px;"
+          style = "-fx-font-size: 14px; -fx-text-fill: white;"
         },
-        new HBox {
-          id = "gamePlay_HBox_PotDisplayCards"
-          spacing = 20
-          alignment = Pos.Center
-          children = pot.map(card => new Label(card.toString))
-        }
+        renderPotInLayout(pot)
       )
     }
+
 
     val layout = new BorderPane {
       id = "gamePlay_BorderPane"
@@ -545,10 +540,45 @@ class Gui(controller: GameController) extends Observer {
     return new ImageView(new Image(getClass.getResourceAsStream("/cards/backside.png")))
   }
   new ImageView(new Image(stream))
-}
+  }
 
+  def renderPotInLayout(pot: List[Card]): StackPane = {
+    val top = (0.0, -80.0, 180.0)
+    val bottom = (0.0, 80.0, 0.0)
+    val left = (-80.0, 0.0, 90.0)
+    val right = (80.0, 0.0, -90.0)
 
+    val stack = new StackPane {
+      alignment = Pos.Center
+      prefWidth = 300
+      prefHeight = 300
+    }
 
+    for ((card, i) <- pot.zipWithIndex) {
+      val cardView = renderCard(card)
+
+      val playerCount = controller.getAllPlayers.length
+
+      val (x, y, rotation) = (playerCount, i) match {
+        
+        case (4, 0) => bottom
+        case (4, 1) => left
+        case (4, 2) => top
+        case (4, 3) => right
+
+        case (3, 0) => bottom
+        case (3, 1) => left
+        case (3, 2) => right
+      }
+
+      cardView.rotate = rotation
+      cardView.translateX = x
+      cardView.translateY = y
+      stack.children.add(cardView)
+    }
+
+    stack
+  }
 
 
   // === Test-Getter Start ===
