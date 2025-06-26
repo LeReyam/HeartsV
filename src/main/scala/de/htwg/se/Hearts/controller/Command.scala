@@ -17,7 +17,9 @@ class PlayCardCommand(
     private var winnerIndex: Int = -1,
     private var trickPoints: Int = 0,
     private var potCards: ListBuffer[Card] = ListBuffer(),
-    private var shouldScore: Boolean = false
+    private var shouldScore: Boolean = false,
+    private var previousPotState: ListBuffer[Card] = ListBuffer(), // Store previous pot state
+    private var potWasCleared: Boolean = false // Track if pot was cleared during execute
 ) extends Command {
 
   override def execute(): Boolean = {
@@ -25,6 +27,21 @@ class PlayCardCommand(
     if (players.isEmpty) return false
 
     val currentPlayer = players(controller.getCurrentPlayerIndex)
+
+    // Store the current pot state before any modifications
+    previousPotState = controller.getCurrentPot.clone()
+
+    // Check if we need to clear the pot (when a new trick starts)
+    val potSize = controller.getCurrentPot.size
+    val playerCount = if (players.nonEmpty) players.length else 0
+
+    // Clear the pot if a complete trick has been played
+    if (potSize > 0 && potSize % playerCount == 0) {
+      controller.getCurrentPot.clear()
+      potWasCleared = true
+    } else {
+      potWasCleared = false
+    }
 
     if (cardIndex >= 0 && cardIndex < controller.getSortedHand.length) {
       previousPlayerIndex = controller.getCurrentPlayerIndex
@@ -35,6 +52,7 @@ class PlayCardCommand(
       controller.addCardToPot(selectedCard)
       controller.advanceToNextPlayer()
       shouldScore = controller.getPlayerCount == controller.getCurrentPot.length
+
       if (shouldScore) {
         potCards = controller.getCurrentPot.clone()
         val firstCard = controller.getCurrentPot.head
@@ -61,7 +79,6 @@ class PlayCardCommand(
 
         val winner = controller.getAllPlayers(winnerIndex)
         winner.points += trickPoints
-        controller.getCurrentPot.clear()
         controller.setCurrentPlayerIndex(winnerIndex)
       }
 
@@ -73,14 +90,18 @@ class PlayCardCommand(
 
   override def undo(): Boolean = {
     if (previousPlayerIndex >= 0 && playedCard.isDefined) {
+      // Restore scoring if it happened
       if (shouldScore && winnerIndex >= 0 && trickPoints > 0) {
-        controller.getCurrentPot.clear()
-        potCards.foreach(card => controller.addCardToPot(card))
         val winner = controller.getAllPlayers(winnerIndex)
         winner.points -= trickPoints
       }
+
+      // Restore the previous pot state
+      controller.getCurrentPot.clear()
+      controller.getCurrentPot.addAll(previousPotState)
+
+      // Restore player state
       controller.setCurrentPlayerIndex(previousPlayerIndex)
-      controller.removeCardFromPot(playedCard.get)
       val players = controller.getAllPlayers
       val currentPlayer = players(previousPlayerIndex)
       currentPlayer.addCard(playedCard.get)
@@ -93,13 +114,22 @@ class PlayCardCommand(
 
   override def redo(): Boolean = {
     if (playedCard.isDefined) {
+      // Check if we need to clear the pot (when a new trick starts)
+      val potSize = controller.getCurrentPot.size
+      val playerCount = controller.getAllPlayers.length
+
+      // Clear the pot if a complete trick has been played
+      if (potSize > 0 && potSize % playerCount == 0) {
+        controller.getCurrentPot.clear()
+      }
+
       val players = controller.getAllPlayers
       val player = players(previousPlayerIndex)
       player.removeCard(playedCard.get)
       controller.addCardToPot(playedCard.get)
       controller.advanceToNextPlayer()
+
       if (shouldScore && winnerIndex >= 0) {
-        controller.getCurrentPot.clear()
         val winner = controller.getAllPlayers(winnerIndex)
         winner.points += trickPoints
         controller.setCurrentPlayerIndex(winnerIndex)

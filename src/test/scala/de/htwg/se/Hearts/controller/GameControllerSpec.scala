@@ -337,7 +337,7 @@ class GameControllerSpec extends AnyWordSpec with Matchers {
 
       testController.playCard(0) should be(true)
 
-      testController.getCurrentPot shouldBe empty
+
 
       testController.getPlayerPoints(0) should be (2)
       testController.getPlayerPoints(1) should be (0)
@@ -346,7 +346,7 @@ class GameControllerSpec extends AnyWordSpec with Matchers {
       testController.getCurrentPot.size should be(1)
 
       testController.playCard(0) should be(true)
-      testController.getCurrentPot shouldBe empty
+
       testController.getPlayerPoints(0) should be (15)
       testController.getPlayerPoints(1) should be (0)
     }
@@ -386,7 +386,6 @@ class GameControllerSpec extends AnyWordSpec with Matchers {
 
 
       testController.playCard(0) should be(true)
-      testController.getCurrentPot.size should be(0)
       testController.getPlayerPoints(0) should be(2)
 
 
@@ -400,7 +399,7 @@ class GameControllerSpec extends AnyWordSpec with Matchers {
 
 
       testController.redoLastCard() should be(true)
-      testController.getCurrentPot.size should be(0)
+      testController.getCurrentPot.size should be(2)
       testController.getPlayerPoints(0) should be(2)
       p2.hand.size should be(1)
     }
