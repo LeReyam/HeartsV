@@ -560,7 +560,7 @@ class Gui(controller: GameController) extends Observer {
       val playerCount = controller.getAllPlayers.length
 
       val (x, y, rotation) = (playerCount, i) match {
-        
+
         case (4, 0) => bottom
         case (4, 1) => left
         case (4, 2) => top

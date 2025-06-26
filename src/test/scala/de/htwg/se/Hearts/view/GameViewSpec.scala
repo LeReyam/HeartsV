@@ -12,6 +12,7 @@ class GameViewSpec extends AnyWordSpec with Matchers {
     "render the player number input prompt correctly" in {
       val controller = new GameController()
       val view = new GameView(controller)
+      controller.handleInput("start")
       val output = view.generateOutputStringGetPlayerNumberState()
       output should include("HEARTS GAME SETUP")
     }
@@ -19,6 +20,7 @@ class GameViewSpec extends AnyWordSpec with Matchers {
     "render the player name input prompt correctly" in {
       val controller = new GameController()
       val view = new GameView(controller)
+      controller.handleInput("start")
 
       controller.handleInput("3")  // 3 Spieler
       controller.handleInput("2")  // 2 menschliche Spieler
@@ -31,6 +33,7 @@ class GameViewSpec extends AnyWordSpec with Matchers {
     "render the game play state correctly" in {
       val controller = new GameController()
       val view = new GameView(controller)
+      controller.handleInput("start")
 
       controller.handleInput("2")
       controller.handleInput("2")
@@ -53,6 +56,7 @@ class GameViewSpec extends AnyWordSpec with Matchers {
     "render game over with correct scores" in {
       val controller = new GameController()
       val view = new GameView(controller)
+      controller.handleInput("start")
 
       controller.handleInput("2")
       controller.handleInput("2")
@@ -72,6 +76,7 @@ class GameViewSpec extends AnyWordSpec with Matchers {
   }
   "stay in GetPlayerNamesState if not all names entered yet" in {
   val controller = new GameController()
+  controller.handleInput("start")
   controller.handleInput("3") // total players
   controller.handleInput("2") // human players
   controller.handleInput("Alice") // one name

@@ -16,6 +16,8 @@ class GameController extends Observable {
   private var commandHistory: ListBuffer[Command] = ListBuffer()
   private var redoStack: ListBuffer[Command] = ListBuffer()
 
+
+
   def setSortStrategy(strategy: SortStrategy): Unit = {
     sortStrategy = strategy
   }
